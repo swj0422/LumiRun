@@ -10,6 +10,8 @@
 - **奖励兑换**：成长奖励小店，支持线下核销
 - **数据隔离**：导师数据完全隔离，保障隐私
 - **模块化架构**：支持功能扩展，易于维护
+- **意见征集**：学员与助理可发布、查看、管理意见帖子
+- **多角色支持**：导师、学员、班级助理多身份切换
 
 ## 技术栈
 
@@ -17,11 +19,11 @@
 - **FastAPI**: 现代化、高性能Python Web框架
 - **MySQL 8.0**: 企业级关系型数据库
 - **Redis**: 缓存与消息队列
-- **SQLAlchemy**: ORM框架
+- **SQLAlchemy**: ORM框架（异步模式）
 - **JWT**: 无状态认证
 
 ### 前端
-- **Vue 3**: 现代化前端框架
+- **Vue 3**: 现代化前端框架（Composition API）
 - **TypeScript**: 类型安全
 - **TailwindCSS**: 原子化CSS框架
 - **Pinia**: 状态管理
@@ -30,10 +32,10 @@
 ## 快速开始
 
 ### 环境要求
-- Python 3.8+
-- Node.js 16+
+- Python 3.10+
+- Node.js 18+
 - MySQL 8.0+
-- Redis 7.0+（可选）
+- Redis 6.0+（可选）
 
 ### Windows 部署（推荐）
 
@@ -82,10 +84,10 @@ cd lumirun
 cd backend
 
 # 创建虚拟环境
-python -m venv venv
+python -m venv .venv
 
 # Windows
-venv\Scripts\activate
+.venv\Scripts\activate
 
 # 安装依赖
 pip install -r requirements.txt
@@ -94,7 +96,7 @@ pip install -r requirements.txt
 copy .env.example .env
 
 # 启动服务
-python main.py
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 #### 3. 启动前端
@@ -122,11 +124,13 @@ npm run dev
 4. **成长值管理**: 录入成长值、流水查询、原因管理
 5. **成长奖励小店**: 奖励创建、兑换、核销
 6. **系统日志**: 操作记录、日志查询
+7. **意见征集**: 帖子发布、查看、管理
 
 ### 可选模块
 1. **排行榜**: 班级排名、全学员排名
 2. **消息通知**: 解绑通知、补货通知
 3. **数据导出**: Excel导出功能
+4. **心愿墙**: 学员心愿提交与管理
 
 ## 项目结构
 
@@ -134,34 +138,41 @@ npm run dev
 lumirun/
 ├── backend/                # 后端项目
 │   ├── app/
-│   │   ├── core/          # 核心配置
+│   │   ├── api/
+│   │   │   └── v1/        # API路由（版本1）
+│   │   ├── core/          # 核心配置（缓存、数据库、安全等）
+│   │   ├── middleware/    # 中间件
 │   │   ├── models/        # 数据库模型
 │   │   ├── schemas/       # Pydantic模型
-│   │   ├── api/           # API路由
-│   │   ├── services/      # 业务逻辑
-│   │   └── utils/         # 工具函数
-│   ├── tests/             # 测试
-│   ├── migrations/        # 数据库迁移
+│   │   └── services/      # 业务逻辑层
+│   ├── migrations/        # 数据库迁移脚本
 │   ├── main.py            # 入口文件
-│   ├── requirements.txt   # 依赖
+│   ├── requirements.txt   # Python依赖
+│   ├── .env.example       # 环境变量模板
 │   └── Dockerfile         # Docker配置
 │
 ├── frontend/              # 前端项目
 │   ├── src/
-│   │   ├── api/          # API接口
-│   │   ├── assets/       # 静态资源
-│   │   ├── components/   # 组件
-│   │   ├── layouts/      # 布局
-│   │   ├── router/       # 路由
-│   │   ├── stores/       # 状态管理
-│   │   ├── styles/       # 样式
-│   │   ├── utils/        # 工具函数
-│   │   └── views/        # 页面
-│   ├── package.json
-│   └── Dockerfile
+│   │   ├── api/           # API接口定义
+│   │   ├── components/    # 公共组件
+│   │   ├── hooks/         # 自定义Hooks
+│   │   ├── layouts/       # 布局组件
+│   │   ├── router/        # 路由配置
+│   │   ├── stores/        # Pinia状态管理
+│   │   ├── styles/        # 全局样式
+│   │   ├── types/         # TypeScript类型定义
+│   │   ├── utils/         # 工具函数
+│   │   └── views/         # 页面组件
+│   │       ├── pc/        # PC端页面
+│   │       └── mobile/    # 移动端页面
+│   ├── package.json       # Node.js依赖
+│   ├── vite.config.ts     # Vite配置
+│   └── tailwind.config.js # TailwindCSS配置
 │
 ├── docker-compose.yml     # Docker编排
-└── README.md
+├── .gitignore            # Git忽略规则
+├── README.md             # 项目说明
+└── WINDOWS-DEPLOY.md     # Windows部署指南
 ```
 
 ## 角色与权限
@@ -171,7 +182,8 @@ lumirun/
 | 超级管理员 | 全权限：管理所有用户、班级、奖励、日志 |
 | 管理员 | 管理所有导师/学员账号、查看全量日志 |
 | 导师 | 管理自己的班级、学员、成长值、奖励、订单 |
-| 学员 | 绑定班级、查看成长值、兑换奖励、提交心愿 |
+| 班级助理 | 协助导师管理班级、录入成长值、查看操作记录 |
+| 学员 | 绑定班级、查看成长值、兑换奖励、提交心愿、发布意见 |
 
 ## 开发规范
 
@@ -188,11 +200,18 @@ lumirun/
 
 ## 更新日志
 
-### v1.0.0 (2026-04-02)
-- 项目初始化
+### v1.0.0 (2026-04-28)
+- 项目初始化完成
 - 基础架构搭建
-- 用户管理模块
-- 班级管理模块
+- 用户管理模块（注册、登录、角色分配）
+- 班级管理模块（创建、二维码绑定）
+- 学员绑定模块（扫码绑定、解绑）
+- 成长值管理模块（录入、流水查询）
+- 成长奖励小店（奖励创建、兑换、核销）
+- 排行榜模块（班级排名、全学员排名）
+- 意见征集模块（帖子发布、查看、管理）
+- 班级助理角色支持
+- 多终端适配（PC端、移动端）
 
 ## 支持与联系
 
