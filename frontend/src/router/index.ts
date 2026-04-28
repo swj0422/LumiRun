@@ -97,6 +97,11 @@ const router = createRouter({
           name: 'TeacherSuggestionDetail',
           component: () => import('@/views/pc/teacher/SuggestionDetail.vue'),
         },
+        {
+          path: 'wishes',
+          name: 'TeacherWishes',
+          component: () => import('@/views/pc/teacher/WishManagement.vue'),
+        },
       ],
     },
     // 班级助理端
