@@ -173,6 +173,11 @@ const router = createRouter({
           name: 'StudentForum',
           component: () => import('@/views/mobile/student/Forum.vue'),
         },
+        {
+          path: 'wishes',
+          name: 'StudentWishes',
+          component: () => import('@/views/mobile/student/WishWall.vue'),
+        },
       ],
     },
     // 管理员端
