@@ -1,0 +1,26 @@
+from fastapi import APIRouter
+from app.api.v1 import auth, user, class_info, student, growth, gift, order, leaderboard, log, admin, class_student, role, system_log, message, export, wish, tag, websocket, student_operation_log, suggestion, class_assistant
+
+api_router = APIRouter()
+
+api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
+api_router.include_router(user.router, prefix="/users", tags=["用户管理"])
+api_router.include_router(role.router, prefix="/role", tags=["角色权限管理"])
+api_router.include_router(class_info.router, prefix="/classes", tags=["班级管理"])
+api_router.include_router(student.router, prefix="/students", tags=["学员绑定"])
+api_router.include_router(class_student.router, tags=["班级学员管理"])
+api_router.include_router(class_assistant.router, prefix="/class-assistants", tags=["班级助理管理"])
+api_router.include_router(growth.router, prefix="/growth", tags=["成长值管理"])
+api_router.include_router(gift.router, prefix="/gifts", tags=["奖励管理"])
+api_router.include_router(order.router, prefix="/orders", tags=["奖励兑换"])
+api_router.include_router(leaderboard.router, prefix="/leaderboard", tags=["排行榜"])
+api_router.include_router(log.router, prefix="/logs", tags=["系统日志"])
+api_router.include_router(system_log.router, prefix="/system-logs", tags=["系统日志管理"])
+api_router.include_router(message.router, prefix="/messages", tags=["消息通知"])
+api_router.include_router(export.router, prefix="/export", tags=["数据导出"])
+api_router.include_router(wish.router, prefix="/wishes", tags=["学员心愿"])
+api_router.include_router(admin.router, prefix="/admin", tags=["管理员"])
+api_router.include_router(tag.router, prefix="/tags", tags=["标签管理"])
+api_router.include_router(student_operation_log.router, prefix="/student-operation-logs", tags=["学员操作日志"])
+api_router.include_router(suggestion.router, prefix="/suggestions", tags=["意见征集"])
+api_router.include_router(websocket.router, tags=["WebSocket"])

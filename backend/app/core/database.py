@@ -1,0 +1,60 @@
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import NullPool
+from app.core.config import get_settings
+from app.core.logger import logger
+# 增加 MySQL 5.6 兼容配置
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
+
+settings = get_settings()
+
+# 创建异步引擎
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    pool_size=settings.DATABASE_POOL_SIZE,
+    max_overflow=settings.DATABASE_MAX_OVERFLOW,
+    pool_pre_ping=True,
+    echo=settings.DEBUG,
+)
+
+# 创建异步会话工厂
+AsyncSessionLocal = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False,
+)
+
+# 声明基类
+Base = declarative_base()
+
+
+async def get_db():
+    """获取数据库会话的依赖函数"""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+async def init_db():
+    """初始化数据库表"""
+    try:
+        async with engine.begin() as conn:
+            # 只创建不存在的表，不删除任何表
+            await conn.run_sync(Base.metadata.create_all, checkfirst=True)
+        logger.info("Database tables initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize database tables: {e}")
+        raise
+
+
+async def close_db():
+    """关闭数据库连接"""
+    await engine.dispose()
