@@ -8,8 +8,15 @@ from app.services.user_service import UserService
 from app.models.user import User
 from app.models.class_info import ClassInfo
 from app.models.gift_order import GiftOrder
+from app.api.v1 import admin_class, admin_student, admin_gift, admin_order, admin_suggestion
 
 router = APIRouter()
+
+router.include_router(admin_class.router, prefix="", tags=["班级管理"])
+router.include_router(admin_student.router, prefix="", tags=["学员管理"])
+router.include_router(admin_gift.router, prefix="", tags=["礼品管理"])
+router.include_router(admin_order.router, prefix="", tags=["订单管理"])
+router.include_router(admin_suggestion.router, prefix="", tags=["意见征集"])
 
 
 @router.get("/stats")

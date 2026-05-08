@@ -34,6 +34,9 @@
             </p>
           </div>
         </div>
+        <div class="mt-3 text-xs text-gray-400">
+          导师: {{ stats.teacherCount }} | 学员: {{ stats.studentCount }}
+        </div>
       </div>
 
       <div class="bg-white rounded-lg shadow p-6">
@@ -61,6 +64,9 @@
               {{ stats.classCount }}
             </p>
           </div>
+        </div>
+        <div class="mt-3 text-xs text-gray-400">
+          今日新增: {{ stats.todayNewClassCount }}
         </div>
       </div>
 
@@ -116,7 +122,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">订单处理</p>
+            <p class="text-sm font-medium text-gray-500">待处理订单</p>
             <p class="text-2xl font-bold text-gray-900">
               {{ stats.pendingOrderCount }}
             </p>
@@ -125,7 +131,25 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">今日统计</h2>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center py-2 border-b border-gray-100">
+            <span class="text-sm text-gray-600">新增班级</span>
+            <span class="text-lg font-semibold text-blue-600">{{ stats.todayNewClassCount }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gray-100">
+            <span class="text-sm text-gray-600">成长操作次数</span>
+            <span class="text-lg font-semibold text-green-600">{{ stats.todayGrowthCount }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2">
+            <span class="text-sm text-gray-600">兑换订单数</span>
+            <span class="text-lg font-semibold text-purple-600">{{ stats.todayOrderCount }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold text-gray-900">待审核导师</h2>
@@ -137,7 +161,7 @@
             查看全部
           </router-link>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 max-h-64 overflow-y-auto">
           <div
             v-if="pendingTeachers.length === 0"
             class="text-center py-4 text-gray-500"
@@ -174,13 +198,34 @@
       </div>
 
       <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">系统公告</h2>
-        <div class="space-y-4">
-          <div class="p-4 bg-blue-50 rounded-lg">
-            <p class="text-sm text-blue-800">欢迎使用逐光成长系统管理后台</p>
-            <p class="text-xs text-blue-600 mt-1">
-              请及时处理待审核的导师注册申请
-            </p>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-900">最近操作日志</h2>
+          <router-link
+            to="/admin/logs"
+            class="text-sm text-primary-600 hover:text-primary-700"
+          >
+            查看全部
+          </router-link>
+        </div>
+        <div class="space-y-3 max-h-64 overflow-y-auto">
+          <div
+            v-if="recentLogs.length === 0"
+            class="text-center py-4 text-gray-500"
+          >
+            暂无操作日志
+          </div>
+          <div
+            v-for="log in recentLogs"
+            :key="log.id"
+            class="py-2 border-b border-gray-100 last:border-0"
+          >
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{ log.action }}</p>
+                <p class="text-xs text-gray-500">{{ log.module }} | {{ log.real_name || log.username }}</p>
+              </div>
+              <span class="text-xs text-gray-400">{{ formatTime(log.created_at) }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -207,20 +252,21 @@ const currentDate = computed(() => {
 const stats = ref({
   userCount: 0,
   classCount: 0,
+  teacherCount: 0,
+  studentCount: 0,
   pendingTeacherCount: 0,
   pendingOrderCount: 0,
+  todayNewClassCount: 0,
+  todayGrowthCount: 0,
+  todayOrderCount: 0,
 });
 
 const pendingTeachers = ref<any[]>([]);
+const recentLogs = ref<any[]>([]);
 
 const fetchStats = async () => {
   try {
-    const data = (await request.get('/v1/admin/stats')) as {
-      userCount: number;
-      classCount: number;
-      pendingTeacherCount: number;
-      pendingOrderCount: number;
-    };
+    const data = (await request.get('/api/v1/admin/stats')) as any;
     stats.value = data;
   } catch (error) {
     console.error('获取统计数据失败:', error);
@@ -229,7 +275,7 @@ const fetchStats = async () => {
 
 const fetchPendingTeachers = async () => {
   try {
-    const data = (await request.get('/v1/admin/users', {
+    const data = (await request.get('/api/v1/admin/users', {
       params: {
         role_id: 3,
         status: false,
@@ -241,13 +287,22 @@ const fetchPendingTeachers = async () => {
   }
 };
 
+const fetchRecentLogs = async () => {
+  try {
+    const data = (await request.get('/api/v1/admin/recent-logs?limit=10')) as any[];
+    recentLogs.value = data || [];
+  } catch (error) {
+    console.error('获取最近日志失败:', error);
+  }
+};
+
 const goToPendingTeachers = () => {
   router.push('/admin/users?role_id=3&status=false');
 };
 
 const approveTeacher = async (id: number) => {
   try {
-    await request.post(`/v1/admin/users/${id}/approve`);
+    await request.post(`/api/v1/admin/users/${id}/approve`);
     fetchPendingTeachers();
     fetchStats();
   } catch (error) {
@@ -257,7 +312,7 @@ const approveTeacher = async (id: number) => {
 
 const rejectTeacher = async (id: number) => {
   try {
-    await request.post(`/v1/admin/users/${id}/reject`);
+    await request.post(`/api/v1/admin/users/${id}/reject`);
     fetchPendingTeachers();
     fetchStats();
   } catch (error) {
@@ -265,8 +320,23 @@ const rejectTeacher = async (id: number) => {
   }
 };
 
+const formatTime = (time: string) => {
+  if (!time) return '';
+  const date = new Date(time);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  
+  if (minutes < 1) return '刚刚';
+  if (minutes < 60) return `${minutes}分钟前`;
+  if (hours < 24) return `${hours}小时前`;
+  return date.toLocaleDateString('zh-CN');
+};
+
 onMounted(() => {
   fetchStats();
   fetchPendingTeachers();
+  fetchRecentLogs();
 });
 </script>

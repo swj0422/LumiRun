@@ -3,10 +3,14 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 import './styles/index.css';
+import { permission, permissionAny } from './directives/permission';
 
 const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
+
+app.directive('permission', permission);
+app.directive('permission-any', permissionAny);
 
 app.mount('#app');

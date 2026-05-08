@@ -259,56 +259,29 @@ const handleLogin = async () => {
 
     console.log('[DEBUG] Login response in handleLogin:', res);
 
-    // 确保res和res.user存在
     if (!res || !res.user) {
       throw new Error('登录响应格式不正确，缺少用户信息');
     }
 
     console.log('[DEBUG] User role:', res.user.role_name);
-    console.log('[DEBUG] Current userInfo in store:', userStore.userInfo);
-    console.log('[DEBUG] Current token in store:', userStore.token);
     console.log('[DEBUG] Current cookies:', document.cookie);
 
-    // 检查用户是否同时拥有多个角色
-    // 直接使用登录响应中的助理信息
-    const isClassAssistant = res.is_class_assistant === true;
-    const isStudent = res.user.role_name === 'student';
-
-    // 如果同时拥有学员和班级助理角色，跳转到角色选择页面
-    if (isStudent && isClassAssistant) {
-      console.log('[DEBUG] Redirecting to /role-selection');
-      setTimeout(() => {
-        console.log('[DEBUG] Executing router.push(/role-selection)');
-        router.push('/role-selection');
-      }, 100);
-    } else if (res.user.role_name === 'teacher' || isClassAssistant) {
-      console.log('[DEBUG] Redirecting to /assistant');
-      setTimeout(() => {
-        console.log('[DEBUG] Executing router.push(/assistant)');
-        router.push('/assistant');
-      }, 100);
-    } else if (isStudent) {
-      console.log('[DEBUG] Redirecting to /student');
-      setTimeout(() => {
-        console.log('[DEBUG] Executing router.push(/student)');
-        router.push('/student');
-      }, 100);
-    } else if (
-      res.user.role_name === 'admin' ||
-      res.user.role_name === 'super_admin'
-    ) {
-      console.log('[DEBUG] Redirecting to /admin');
-      setTimeout(() => {
-        console.log('[DEBUG] Executing router.push(/admin)');
-        router.push('/admin');
-      }, 100);
-    } else {
-      console.log('[DEBUG] Unknown role, redirecting to /');
-      setTimeout(() => {
-        console.log('[DEBUG] Executing router.push(/)');
-        router.push('/');
-      }, 100);
-    }
+    // 登录成功后刷新页面，确保Cookie生效
+    setTimeout(() => {
+      if (res.user.role_name === 'admin' || res.user.role_name === 'super_admin') {
+        window.location.href = '/admin';
+      } else if (res.user.role_name === 'teacher') {
+        window.location.href = '/teacher';
+      } else if (res.user.role_name === 'student') {
+        if (res.is_class_assistant) {
+          window.location.href = '/role-selection';
+        } else {
+          window.location.href = '/student';
+        }
+      } else {
+        window.location.href = '/';
+      }
+    }, 500);
   } catch (error: any) {
     console.error('[DEBUG] Login error:', error);
     if (error.response?.status === 429) {

@@ -10,6 +10,7 @@ from app.models.gift import Gift
 from app.models.gift_stock import GiftStock
 from app.models.class_info import ClassInfo
 from app.models.user import User
+from app.services.order_data_transformer import OrderDataTransformer
 
 from pydantic import BaseModel, Field
 from app.core.logger import logger
@@ -67,84 +68,12 @@ async def get_orders(
         order_list = []
         for order in orders:
             try:
-                # 查询ClassStudent信息，预加载student_profile关系
-                from app.models.class_student import ClassStudent
-                from app.models.student_profile import StudentProfile
-                from sqlalchemy.orm import selectinload
-                student_result = await db.execute(
-                    select(ClassStudent).options(
-                        selectinload(ClassStudent.student_profile).selectinload(StudentProfile.user)
-                    ).where(ClassStudent.id == order.class_student_id)
+                order_data = await OrderDataTransformer.build_order_response(
+                    db, order, include_operator=True, include_qr_code=True
                 )
-                student = student_result.scalar_one_or_none()
-                
-                # 获取学生姓名
-                student_name = ""
-                if student:
-                    try:
-                        if student.student_profile and student.student_profile.user:
-                            student_name = student.student_profile.user.real_name
-                        else:
-                            student_name = student.name_in_class or ""
-                    except Exception as e:
-                        student_name = student.name_in_class if student else ""
-                        logger.warning(f"获取学生姓名失败: {e}")
-                
-                gift_result = await db.execute(
-                    select(Gift).where(Gift.id == order.gift_id)
-                )
-                gift = gift_result.scalar_one_or_none()
-                
-                class_result = await db.execute(
-                    select(ClassInfo).where(ClassInfo.id == order.class_id)
-                )
-                class_info = class_result.scalar_one_or_none()
-                
-                # 获取操作人信息
-                operator_name = ""
-                if order.operator_id:
-                    try:
-                        # 检查操作人是否是学员
-                        from app.models.class_student import ClassStudent
-                        from app.models.student_profile import StudentProfile
-                        
-                        # 查询该操作人是否在当前订单的班级中作为学员
-                        student_result = await db.execute(
-                            select(ClassStudent).join(StudentProfile).where(
-                                StudentProfile.user_id == order.operator_id,
-                                ClassStudent.class_id == order.class_id
-                            )
-                        )
-                        student = student_result.scalar_one_or_none()
-                        
-                        if student:
-                            # 如果是学员，使用班级中的名字
-                            operator_name = student.name_in_class or ""
-                        else:
-                            # 否则使用用户注册的名字
-                            operator_result = await db.execute(
-                                select(User).where(User.id == order.operator_id)
-                            )
-                            operator = operator_result.scalar_one_or_none()
-                            if operator:
-                                operator_name = operator.real_name or operator.username or ""
-                    except Exception as e:
-                        logger.warning(f"获取操作人信息失败: {e}")
-                
-                order_list.append({
-                    "id": order.id,
-                    "student_name": student_name,
-                    "gift_name": gift.name if gift else "",
-                    "class_name": class_info.class_name if class_info else "",
-                    "price": order.price,
-                    "status": order.status,
-                    "operator_name": operator_name,
-                    "created_at": order.created_at,
-                    "qr_code": order.qr_code  # 添加核销码
-                })
+                order_list.append(order_data)
             except Exception as e:
                 logger.error(f"处理订单{order.id}失败: {e}")
-                # 即使某个订单处理失败，也继续处理其他订单
                 order_list.append({
                     "id": order.id,
                     "student_name": "",
@@ -224,64 +153,10 @@ async def get_completed_orders(
         
         order_list = []
         for order_log in order_logs:
-            # 获取礼品名称
-            gift_result = await db.execute(
-                select(Gift).where(Gift.id == order_log.gift_id)
+            order_data = await OrderDataTransformer.build_order_response(
+                db, order_log, include_operator=True, order_id_field="order_id"
             )
-            gift = gift_result.scalar_one_or_none()
-            
-            # 获取班级信息
-            class_result = await db.execute(
-                select(ClassInfo).where(ClassInfo.id == order_log.class_id)
-            )
-            class_info = class_result.scalar_one_or_none()
-            
-            # 获取学员姓名
-            student_name = ""
-            from app.models.student_profile import StudentProfile
-            from sqlalchemy.orm import selectinload
-            student_class_result = await db.execute(
-                select(ClassStudent).options(
-                    selectinload(ClassStudent.student_profile).selectinload(StudentProfile.user)
-                ).where(ClassStudent.id == order_log.class_student_id)
-            )
-            student_class = student_class_result.scalar_one_or_none()
-            if student_class:
-                try:
-                    if student_class.student_profile and student_class.student_profile.user:
-                        student_name = student_class.student_profile.user.real_name
-                    else:
-                        student_name = student_class.name_in_class or ""
-                except Exception as e:
-                    student_name = student_class.name_in_class if student_class else ""
-                    logger.warning(f"获取学生姓名失败: {e}")
-            
-            # 获取操作人姓名
-            operator_name = ""
-            if order_log.operator_id:
-                try:
-                    operator_result = await db.execute(
-                        select(User).where(User.id == order_log.operator_id)
-                    )
-                    operator = operator_result.scalar_one_or_none()
-                    if operator:
-                        operator_name = operator.real_name or operator.username or ""
-                except Exception as e:
-                    logger.warning(f"获取操作人信息失败: {e}")
-            
-            order_list.append({
-                "id": order_log.order_id,
-                "student_name": student_name,
-                "gift_name": gift.name if gift else "",
-                "class_name": class_info.class_name if class_info else "",
-                "price": order_log.price,
-                "status": order_log.status,
-                "action": order_log.action,
-                "operator_name": operator_name,
-                "remarks": order_log.remarks or "",
-                "operated_at": order_log.operated_at,
-                "created_at": order_log.created_at
-            })
+            order_list.append(order_data)
         
         return {
             "items": order_list,
@@ -893,43 +768,12 @@ async def get_user_orders(
     
     order_list = []
     for order in orders:
-        # 使用 selectinload 预加载关系
-        gift_result = await db.execute(
-            select(Gift).where(Gift.id == order.gift_id)
+        order_data = await OrderDataTransformer.build_order_response(
+            db, order, include_operator=False, include_qr_code=True
         )
-        gift = gift_result.scalar_one_or_none()
-        
-        class_result = await db.execute(
-            select(ClassInfo).where(ClassInfo.id == order.class_id)
-        )
-        class_info = class_result.scalar_one_or_none()
-        
-        # 获取学生信息，使用 selectinload 预加载
-        student_name = ""
-        class_student_result = await db.execute(
-            select(ClassStudent).options(
-                selectinload(ClassStudent.student_profile).selectinload(StudentProfile.user)
-            ).where(ClassStudent.id == order.class_student_id)
-        )
-        class_student = class_student_result.scalar_one_or_none()
-        if class_student:
-            if class_student.student_profile and class_student.student_profile.user:
-                student_name = class_student.student_profile.user.real_name
-            else:
-                student_name = class_student.name_in_class or ""
-        
-        order_list.append({
-            "id": order.id,
-            "gift_name": gift.name if gift else "",
-            "class_name": class_info.class_name if class_info else "",
-            "student_name": student_name,
-            "price": order.price,
-            "status": order.status,
-            "status_text": "待审核" if order.status == 0 else "待核销" if order.status == 1 else "已完成",
-            "created_at": order.created_at,
-            "qr_code": order.qr_code  # 添加核销码
-        })
-    
+        order_data["status_text"] = "待审核" if order.status == 0 else "待核销" if order.status == 1 else "已完成"
+        order_list.append(order_data)
+
     return {
         "items": order_list,
         "total": total,
@@ -1153,11 +997,7 @@ async def create_teacher_order(
         await db.refresh(order)
         
         # 获取学生姓名
-        student_name = ""
-        if student_class.student_profile and student_class.student_profile.user:
-            student_name = student_class.student_profile.user.real_name
-        else:
-            student_name = student_class.name_in_class
+        student_name = await OrderDataTransformer.get_student_name(db, student_class.id)
         
         # 写入订单操作记录
         from app.models.gift_order_log import GiftOrderLog

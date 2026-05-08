@@ -6,26 +6,31 @@ class WebSocketService {
   private reconnectDelay: number = 1000;
   private messageHandlers: Map<string, ((data: any) => void)[]> = new Map();
   private isConnected: boolean = false;
+  private currentToken: string = '';
+  private currentClassId: number = 0;
 
   connect(token: string, classId: number): Promise<boolean> {
     return new Promise((resolve) => {
-      // 构建WebSocket URL
+      this.currentToken = token;
+      this.currentClassId = classId;
+
+      if (!token) {
+        console.error('WebSocket连接失败: 缺少token');
+        resolve(false);
+        return;
+      }
+
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.host;
-      this.url = `${protocol}//${host}/v1/ws?token=${token}&class_id=${classId}`;
+      this.url = `${protocol}//${host}/api/v1/ws?token=${encodeURIComponent(token)}&class_id=${classId}`;
+
+      console.log(`[WebSocket] 尝试连接: ${this.url}`);
 
       try {
-        // 检查token是否存在
-        if (!token) {
-          console.error('WebSocket连接失败: 缺少token');
-          resolve(false);
-          return;
-        }
-
         this.ws = new WebSocket(this.url);
 
         this.ws.onopen = () => {
-          console.log('WebSocket连接成功');
+          console.log('[WebSocket] 连接成功');
           this.isConnected = true;
           this.reconnectAttempts = 0;
           resolve(true);
@@ -34,45 +39,44 @@ class WebSocketService {
         this.ws.onmessage = (event) => {
           try {
             const message = JSON.parse(event.data);
+            console.log('[WebSocket] 收到消息:', message);
             this.handleMessage(message);
           } catch (error) {
-            console.error('解析WebSocket消息失败:', error);
+            console.error('[WebSocket] 解析消息失败:', error);
           }
         };
 
-        this.ws.onclose = () => {
-          console.log('WebSocket连接关闭');
+        this.ws.onclose = (event) => {
+          console.log(`[WebSocket] 连接关闭 - 代码: ${event.code}, 原因: ${event.reason}`);
           this.isConnected = false;
-          // 只有在token存在时才尝试重连
-          if (token) {
-            this.attemptReconnect(token, classId);
+          if (this.currentToken) {
+            this.attemptReconnect();
           }
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket错误:', error);
+          console.error('[WebSocket] 连接错误:', error);
+          console.error('[WebSocket] URL:', this.url);
           this.isConnected = false;
           resolve(false);
         };
       } catch (error) {
-        console.error('WebSocket连接失败:', error);
+        console.error('[WebSocket] 创建连接失败:', error);
         resolve(false);
       }
     });
   }
 
-  private attemptReconnect(token: string, classId: number) {
+  private attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(
-        `尝试重连WebSocket (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
-      );
+      console.log(`[WebSocket] 尝试重连 (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
 
       setTimeout(() => {
-        this.connect(token, classId);
+        this.connect(this.currentToken, this.currentClassId);
       }, this.reconnectDelay * this.reconnectAttempts);
     } else {
-      console.error('WebSocket重连失败，已达到最大尝试次数');
+      console.error('[WebSocket] 重连失败，已达到最大尝试次数');
     }
   }
 

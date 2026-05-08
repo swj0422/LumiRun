@@ -1,137 +1,181 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- 顶部导航栏 -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- 第一行：Logo和用户信息 -->
-        <div class="flex justify-between h-16">
-          <!-- Logo -->
-          <div class="flex items-center">
-            <router-link to="/assistant" class="flex items-center">
-              <div
-                class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"
-              >
-                <svg
-                  class="w-5 h-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span class="ml-2 text-xl font-bold text-gray-900"
-                >逐光成长系统</span
-              >
-            </router-link>
-          </div>
-
-          <!-- 移动端菜单按钮 -->
-          <div class="md:hidden flex items-center">
-            <button
-              @click="mobileMenuOpen = !mobileMenuOpen"
-              class="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+  <div class="min-h-screen bg-gray-50 flex">
+    <!-- 侧边栏导航 -->
+    <aside
+      :class="[
+        'hidden md:flex flex-col bg-white border-r border-gray-200 fixed left-0 top-0 h-screen transition-all duration-300 z-40',
+        sidebarCollapsed ? 'w-16' : 'w-56'
+      ]"
+    >
+      <!-- Logo区域 -->
+      <div class="flex items-center h-16 px-4 border-b border-gray-200">
+        <router-link to="/assistant" class="flex items-center flex-1">
+          <div
+            class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"
+          >
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  v-if="!mobileMenuOpen"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-                <path
-                  v-else
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
           </div>
+          <span v-if="!sidebarCollapsed" class="ml-2 text-lg font-bold text-gray-900 truncate">逐光成长系统</span>
+        </router-link>
+        <button
+          @click="sidebarCollapsed = !sidebarCollapsed"
+          class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+          :title="sidebarCollapsed ? '展开菜单' : '收起菜单'"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path v-if="sidebarCollapsed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
 
-          <!-- 用户信息 -->
-          <div class="hidden md:flex items-center">
-            <div class="flex items-center space-x-4">
-              <span class="text-sm text-gray-700">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
-              <!-- 切换班级/学员按钮 -->
-              <button
-                @click="showRoleModal = true"
-                class="flex items-center text-sm text-gray-500 hover:text-gray-700"
-              >
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                切换
-              </button>
-              <button
-                @click="handleLogout"
-                class="text-sm text-gray-500 hover:text-gray-700"
-              >
-                退出
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 第二行：导航菜单 -->
-        <nav class="hidden md:flex space-x-8 h-12 items-center">
+      <!-- 导航菜单 -->
+      <nav class="flex-1 py-4">
+        <div class="space-y-1 px-2">
           <router-link
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            class="inline-flex items-center px-1 pt-1 text-sm font-medium"
-            :class="isActive(item.path) ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500 hover:text-gray-700'"
+            class="flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md"
+            :class="isActive(item.path) ? 'text-primary-600 bg-primary-50 border-l-2 border-primary-600' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path v-if="item.name === '首页'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              <path v-else-if="item.name === '学员管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <path v-else-if="item.name === '成长管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              <path v-else-if="item.name === '意见征集'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <path v-else-if="item.name === '心愿便利贴'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <span v-if="!sidebarCollapsed" class="truncate">{{ item.name }}</span>
+          </router-link>
+        </div>
+      </nav>
+
+      <!-- 用户信息和操作 -->
+      <div class="px-3 py-3 border-t border-gray-200">
+        <div v-if="!sidebarCollapsed" class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-700 truncate flex-1">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
+          <button
+            @click="showRoleModal = true"
+            class="flex items-center text-sm text-gray-500 hover:text-gray-700 ml-2"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            v-if="!sidebarCollapsed"
+            @click="handleLogout"
+            class="text-sm text-gray-500 hover:text-gray-700"
+          >
+            退出
+          </button>
+          <button
+            v-else
+            @click="handleLogout"
+            class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+            title="退出"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 移动端顶部导航栏 -->
+    <header class="md:hidden bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+      <div class="flex justify-between h-16 px-4">
+        <div class="flex items-center">
+          <router-link to="/assistant" class="flex items-center">
+            <div
+              class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <span class="ml-2 text-xl font-bold text-gray-900">逐光成长系统</span>
+          </router-link>
+        </div>
+
+        <button
+          @click="mobileMenuOpen = !mobileMenuOpen"
+          class="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              v-if="!mobileMenuOpen"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+            <path
+              v-else
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div v-if="mobileMenuOpen" class="py-4 border-t border-gray-200 px-4">
+        <div class="space-y-2">
+          <router-link
+            v-for="item in navItems"
+            :key="item.path"
+            :to="item.path"
+            @click="mobileMenuOpen = false"
+            class="block px-3 py-2 rounded-md text-base font-medium"
+            :class="isActive(item.path) ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'"
           >
             {{ item.name }}
           </router-link>
-        </nav>
-
-        <!-- 移动端导航菜单 -->
-        <div
-          v-if="mobileMenuOpen"
-          class="md:hidden py-4 border-t border-gray-200"
-        >
-          <div class="space-y-4">
-            <router-link
-              v-for="item in navItems"
-              :key="item.path"
-              :to="item.path"
-              @click="mobileMenuOpen = false"
-              class="block px-3 py-2 rounded-md text-base font-medium"
-              :class="isActive(item.path) ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'"
-            >
-              {{ item.name }}
-            </router-link>
-            <!-- 切换班级/学员按钮 -->
-            <button
-              @click="showRoleModal = true; mobileMenuOpen = false"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            >
-              切换班级/学员
-            </button>
-            <div class="px-3 py-2">
-              <div class="flex items-center justify-between">
-                <span class="text-base font-medium text-gray-700">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
-                <button
-                  @click="handleLogout"
-                  class="text-base font-medium text-gray-500 hover:text-gray-700"
-                >
-                  退出
-                </button>
-              </div>
+          <button 
+            @click="showRoleModal = true; mobileMenuOpen = false"
+            class="block w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-left"
+          >
+            切换班级/学员
+          </button>
+          <div class="pt-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+              <span class="text-base font-medium text-gray-700">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
+              <button @click="handleLogout" class="text-base font-medium text-gray-500 hover:text-gray-700">退出</button>
             </div>
           </div>
         </div>
@@ -139,12 +183,14 @@
     </header>
 
     <!-- 主内容区 -->
-    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+    <main :class="['flex-1 transition-all duration-300', sidebarCollapsed ? 'md:ml-16' : 'md:ml-56']">
+      <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </div>
     </main>
 
     <!-- 切换身份/班级模态框 -->
@@ -152,27 +198,13 @@
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold text-gray-900">切换身份/班级</h3>
-          <button
-            @click="showRoleModal = false"
-            class="text-gray-500 hover:text-gray-700"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <button @click="showRoleModal = false" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         <div class="space-y-4">
-          <!-- 切换班级助理身份 -->
           <div>
             <h4 class="text-sm font-medium text-gray-700 mb-2">当前身份：班级助理</h4>
             <div class="space-y-2">
@@ -188,7 +220,6 @@
             </div>
           </div>
 
-          <!-- 切换学员身份 -->
           <div v-if="isAlsoStudent">
             <h4 class="text-sm font-medium text-gray-700 mb-2">切换为学员身份</h4>
             <div class="space-y-2">
@@ -201,14 +232,11 @@
                 <p class="text-sm font-medium text-gray-900">
                   {{ cls.school_name ? cls.school_name + ' ' : '' }}{{ cls.session }}级 {{ cls.class_name }}班
                 </p>
-                <p class="text-xs text-gray-500">
-                  学号: {{ cls.student_no_in_class }}
-                </p>
+                <p class="text-xs text-gray-500">学号: {{ cls.student_no_in_class }}</p>
               </div>
             </div>
           </div>
 
-          <!-- 没有学员身份时 -->
           <div v-else class="text-center py-4">
             <p class="text-gray-500 text-sm mb-4">暂无绑定的学员班级</p>
             <button 
@@ -227,22 +255,9 @@
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold text-gray-900">绑定班级</h3>
-          <button
-            @click="closeBindClassModal"
-            class="text-gray-500 hover:text-gray-700"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <button @click="closeBindClassModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -286,10 +301,7 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-          <button
-            @click="submitBindClass"
-            class="w-full btn-primary py-2"
-          >
+          <button @click="submitBindClass" class="w-full btn-primary py-2">
             绑定班级
           </button>
         </div>
@@ -302,36 +314,16 @@
         <div class="bg-white rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-900">扫描班级码</h3>
-            <button
-              @click="closeScanner"
-              class="text-gray-500 hover:text-gray-700"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <button @click="closeScanner" class="text-gray-500 hover:text-gray-700">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div
-            id="qr-code-scanner-assistant-layout"
-            class="w-full aspect-square bg-gray-100 rounded-lg mb-4"
-          ></div>
-          <p class="text-sm text-gray-600 text-center">
-            请将班级二维码置于扫描框内
-          </p>
+          <div id="qr-code-scanner-assistant-layout" class="w-full aspect-square bg-gray-100 rounded-lg mb-4"></div>
+          <p class="text-sm text-gray-600 text-center">请将班级二维码置于扫描框内</p>
           <div class="mt-4 flex justify-center">
-            <button @click="closeScanner" class="text-sm text-primary-600">
-              取消
-            </button>
+            <button @click="closeScanner" class="text-sm text-primary-600">取消</button>
           </div>
         </div>
       </div>
@@ -350,13 +342,13 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const mobileMenuOpen = ref(false);
+const sidebarCollapsed = ref(false);
 const showRoleModal = ref(false);
 const assistantClasses = ref<any[]>([]);
 const studentClasses = ref<any[]>([]);
 const isAlsoStudent = ref(false);
 const studentName = ref('');
 
-// 绑定班级相关
 const showBindClassModal = ref(false);
 const showScanner = ref(false);
 const bindClassId = ref('');
@@ -364,7 +356,6 @@ const bindNameInClass = ref('');
 const bindStudentNoInClass = ref('');
 let html5Qrcode: Html5Qrcode | null = null;
 
-// 获取班级助理的授权班级
 const fetchAssistantClasses = async () => {
   try {
     const response = await request.get('/api/v1/class-assistants/user');
@@ -377,14 +368,12 @@ const fetchAssistantClasses = async () => {
   }
 };
 
-// 检查用户是否同时也是学员
 const checkStudentStatus = async () => {
   try {
     const response = await request.get('/api/v1/students/my-classes');
     if (response && Array.isArray(response) && response.length > 0) {
       isAlsoStudent.value = true;
       studentClasses.value = response;
-      // 使用第一个绑定班级的学员名字
       studentName.value = response[0].student_name || '';
     } else {
       isAlsoStudent.value = false;
@@ -399,7 +388,6 @@ const checkStudentStatus = async () => {
   }
 };
 
-// 选择切换到特定班级的学员身份
 const selectStudentClass = (cls: any) => {
   showRoleModal.value = false;
   localStorage.setItem('selectedRole', 'student');
@@ -407,17 +395,14 @@ const selectStudentClass = (cls: any) => {
   router.push('/student');
 };
 
-// 打开绑定班级弹窗
 const openBindClassModal = () => {
   showBindClassModal.value = true;
 };
 
-// 关闭绑定班级弹窗
 const closeBindClassModal = () => {
   showBindClassModal.value = false;
 };
 
-// 提交绑定班级
 const submitBindClass = async () => {
   if (!bindClassId.value) {
     alert('请输入班级二维码内容');
@@ -432,7 +417,6 @@ const submitBindClass = async () => {
     return;
   }
 
-  // 解析二维码内容
   let qrCode = '';
   if (bindClassId.value.startsWith('class:')) {
     qrCode = bindClassId.value.substring(6);
@@ -446,7 +430,6 @@ const submitBindClass = async () => {
   }
 
   try {
-    // 验证二维码是否有效
     try {
       await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
@@ -455,7 +438,6 @@ const submitBindClass = async () => {
       return;
     }
 
-    // 调用绑定接口
     const bindData = {
       qr_code: qrCode,
       name_in_class: bindNameInClass.value,
@@ -467,7 +449,6 @@ const submitBindClass = async () => {
     if (response.message === '绑定成功') {
       alert('绑定成功！');
       closeBindClassModal();
-      // 重新检查学员状态
       await checkStudentStatus();
     } else if (response.message === '绑定申请已提交，请等待导师审批') {
       alert('绑定申请已提交，请等待导师审批');
@@ -482,12 +463,10 @@ const submitBindClass = async () => {
   }
 };
 
-// 在绑定弹窗中打开扫码器
 const openScannerInBindModal = async () => {
   showBindClassModal.value = false;
   showScanner.value = true;
 
-  // 等待 DOM 更新后初始化扫码器
   setTimeout(async () => {
     try {
       html5Qrcode = new Html5Qrcode('qr-code-scanner-assistant-layout');
@@ -510,7 +489,6 @@ const openScannerInBindModal = async () => {
   }, 100);
 };
 
-// 关闭扫码器
 const closeScanner = async () => {
   showScanner.value = false;
 
@@ -524,20 +502,15 @@ const closeScanner = async () => {
   }
 };
 
-// 处理扫码结果
 const handleScanResult = async (result: string) => {
   try {
-    // 停止扫码
     if (html5Qrcode) {
       await html5Qrcode.stop();
       html5Qrcode = null;
     }
 
-    // 关闭扫码弹窗
     showScanner.value = false;
 
-    // 解析扫码结果
-    // 二维码内容格式: class:{qr_code}
     let qrCode = '';
     if (result.startsWith('class:')) {
       qrCode = result.substring(6);
@@ -550,7 +523,6 @@ const handleScanResult = async (result: string) => {
       return;
     }
 
-    // 通过 qr_code 获取班级信息
     let classInfo;
     try {
       classInfo = await request.get(`/api/v1/classes/qr/${qrCode}`);
@@ -565,7 +537,6 @@ const handleScanResult = async (result: string) => {
       return;
     }
 
-    // 填充班级二维码内容并重新打开绑定弹窗
     bindClassId.value = result;
     showBindClassModal.value = true;
   } catch (error) {
@@ -574,7 +545,6 @@ const handleScanResult = async (result: string) => {
   }
 };
 
-// 页面加载时检查用户状态
 onMounted(async () => {
   await fetchAssistantClasses();
   await checkStudentStatus();
@@ -586,6 +556,7 @@ const navItems = computed(() => {
     { name: '学员管理', path: '/assistant/students' },
     { name: '成长管理', path: '/assistant/growth' },
     { name: '意见征集', path: '/assistant/suggestion-forum' },
+    { name: '心愿便利贴', path: '/assistant/wish-wall' },
   ];
 });
 

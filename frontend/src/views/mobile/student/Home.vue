@@ -101,18 +101,6 @@
             </div>
           </div>
         </router-link>
-        <router-link to="/student/wishes" class="card p-4 hover:shadow-md transition-shadow">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">心愿墙</p>
-            </div>
-          </div>
-        </router-link>
       </div>
     </div>
 
@@ -302,7 +290,7 @@
             请将班级二维码置于扫描框内
           </p>
           <div class="mt-4 flex justify-center">
-            <button @click="closeScanner; openManualBind()" class="text-sm text-primary-600">
+            <button @click="handleManualBindClick" class="text-sm text-primary-600">
               手动输入班级ID
             </button>
           </div>
@@ -471,16 +459,21 @@ const checkBindClass = async () => {
       bindClasses.value = response;
       // 保存第一个绑定班级信息（用于显示在顶部）
       bindClassInfo.value = response[0];
+      // 保存班级ID到localStorage，用于WebSocket连接
+      localStorage.setItem('selectedClassId', response[0].id.toString());
+      console.log('[DEBUG] 保存班级ID到localStorage:', response[0].id);
     } else {
       hasBindClass.value = false;
       bindClasses.value = [];
       bindClassInfo.value = null;
+      localStorage.removeItem('selectedClassId');
     }
   } catch (error) {
     console.error('检查绑定班级失败:', error);
     hasBindClass.value = false;
     bindClasses.value = [];
     bindClassInfo.value = null;
+    localStorage.removeItem('selectedClassId');
   }
 };
 
@@ -606,6 +599,12 @@ const closeScanner = async () => {
 // 打开手动绑定弹窗
 const openManualBind = () => {
   showManualBind.value = true;
+};
+
+// 处理手动绑定按钮点击
+const handleManualBindClick = () => {
+  closeScanner();
+  openManualBind();
 };
 
 // 在手动绑定弹窗中打开扫码器

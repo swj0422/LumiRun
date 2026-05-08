@@ -112,8 +112,8 @@ export const useUserStore = defineStore('user', () => {
       if (tokenFromCookie) {
         token.value = tokenFromCookie;
       } else {
-        // 尝试从响应中获取token
-        const tokenFromResponse = res.refresh_token || '';
+        // 尝试从响应中获取token（使用access_token进行API认证）
+        const tokenFromResponse = res.access_token || '';
         if (tokenFromResponse) {
           token.value = tokenFromResponse;
           localStorage.setItem('token', tokenFromResponse);

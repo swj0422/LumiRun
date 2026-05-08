@@ -458,14 +458,32 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               核销码
             </label>
-            <input
-              type="text"
-              v-model="verifyCode"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="请输入核销码"
-            />
+            <div class="flex gap-2">
+              <input
+                type="text"
+                v-model="verifyCode"
+                required
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="请输入核销码"
+              />
+              <button
+                type="button"
+                @click="scanQRCode"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                扫码
+              </button>
+            </div>
           </div>
+          
+          <!-- 扫码区域 -->
+          <div v-if="showScanArea" class="mb-4">
+            <div class="border-2 border-dashed border-gray-300 rounded-md p-4">
+              <div id="qr-reader" class="w-full h-48 bg-gray-100 rounded"></div>
+              <p class="text-center text-sm text-gray-500 mt-2">请将二维码对准扫描框</p>
+            </div>
+          </div>
+          
           <div class="flex justify-end space-x-3 mt-6">
             <button
               type="button"
@@ -539,10 +557,12 @@ const completedCount = ref(0);
 const showRejectModal = ref(false);
 const showRedemptionModal = ref(false);
 const showVerifyModal = ref(false);
+const showScanArea = ref(false);
 const rejectReason = ref('');
 const verifyCode = ref('');
 const selectedOrder = ref<Order | null>(null);
 const selectedVerifyOrder = ref<Order | null>(null);
+let qrCodeScanner: any = null;
 const redemptionForm = ref({
   classId: '',
   studentId: '',
@@ -649,7 +669,56 @@ const verifyOrder = (order: Order) => {
   showVerifyModal.value = true;
 };
 
+const scanQRCode = async () => {
+  showScanArea.value = !showScanArea.value;
+  
+  if (showScanArea.value) {
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode');
+      
+      qrCodeScanner = new Html5Qrcode('qr-reader');
+      
+      qrCodeScanner.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+        },
+        (decodedText: string, decodedResult: any) => {
+          verifyCode.value = decodedText;
+          stopScan();
+        },
+        (errorMessage: string) => {
+          // 扫描失败时的回调，可以忽略
+        }
+      ).catch((err: any) => {
+        console.error('扫码启动失败:', err);
+        alert('扫码启动失败，请确保已授权摄像头权限');
+        showScanArea.value = false;
+      });
+    } catch (error) {
+      console.error('加载扫码库失败:', error);
+      alert('扫码功能不可用');
+      showScanArea.value = false;
+    }
+  } else {
+    stopScan();
+  }
+};
+
+const stopScan = () => {
+  if (qrCodeScanner) {
+    qrCodeScanner.stop().catch((err: any) => {
+      console.error('停止扫码失败:', err);
+    });
+    qrCodeScanner = null;
+  }
+  showScanArea.value = false;
+};
+
 const handleVerify = async () => {
+  stopScan();
+  
   try {
     if (!selectedVerifyOrder.value) return;
     

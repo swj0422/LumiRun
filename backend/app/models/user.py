@@ -11,6 +11,7 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     role_name = Column(String(50), unique=True, nullable=False, comment="角色名称")
     remark = Column(String(255), comment="角色说明")
+    parent_id = Column(Integer, ForeignKey("sys_role.id"), nullable=True, comment="父角色ID")
     
     # 关系
     users = relationship("User", back_populates="role")

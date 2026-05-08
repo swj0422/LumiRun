@@ -9,35 +9,28 @@ from app.core.logger import logger
 
 
 class WishService:
-    """学员心愿服务"""
+    """心愿便利贴服务"""
     
     @staticmethod
     async def create_wish(
         db: AsyncSession,
         user_id: int,
-        class_id: int,
-        title: str,
-        description: Optional[str] = None,
-        image_urls: Optional[str] = None
+        content: str,
+        class_student_id: Optional[int] = None,
+        image_url: Optional[str] = None,
+        is_anonymous: int = 0
     ) -> Wish:
-        """创建学员心愿"""
-        # 检查班级是否存在
-        class_info = await db.execute(
-            select(ClassInfo).where(ClassInfo.id == class_id)
-        )
-        class_info = class_info.scalar_one_or_none()
+        """创建心愿便利贴"""
+        if not content or len(content) > 200:
+            raise ValueError("心愿内容必须在1-200字之间")
         
-        if not class_info:
-            raise ValueError("班级不存在")
-        
-        # 创建心愿
         wish = Wish(
             user_id=user_id,
-            class_id=class_id,
-            title=title,
-            description=description,
-            image_urls=image_urls,
-            status=0,
+            class_student_id=class_student_id,
+            content=content,
+            image_url=image_url,
+            is_anonymous=is_anonymous,
+            is_deleted=0,
             created_at=datetime.now()
         )
         
@@ -45,22 +38,18 @@ class WishService:
         await db.commit()
         await db.refresh(wish)
         
-        logger.info(f"学员 {user_id} 创建心愿: {title}, 班级ID {class_id}")
+        logger.info(f"用户 {user_id} 创建心愿便利贴")
         return wish
     
     @staticmethod
     async def get_user_wishes(
         db: AsyncSession,
         user_id: int,
-        status: Optional[int] = None,
         skip: int = 0,
         limit: int = 20
     ) -> tuple[List[Wish], int]:
-        """获取学员的心愿列表"""
-        query = select(Wish).where(Wish.user_id == user_id)
-        
-        if status is not None:
-            query = query.where(Wish.status == status)
+        """获取用户的心愿便利贴列表"""
+        query = select(Wish).where(Wish.user_id == user_id, Wish.is_deleted == 0)
         
         count_query = select(func.count()).select_from(query.subquery())
         total = (await db.execute(count_query)).scalar() or 0
@@ -72,29 +61,13 @@ class WishService:
         return wishes, total
     
     @staticmethod
-    async def get_teacher_wishes(
+    async def get_public_wishes(
         db: AsyncSession,
-        teacher_id: int,
-        class_id: Optional[int] = None,
-        status: Optional[int] = None,
         skip: int = 0,
         limit: int = 20
     ) -> tuple[List[Wish], int]:
-        """获取导师班级的心愿列表"""
-        classes = await db.execute(
-            select(ClassInfo.id).where(ClassInfo.teacher_id == teacher_id)
-        )
-        class_ids = [c[0] for c in classes.all()]
-        
-        if not class_ids:
-            return [], 0
-        
-        query = select(Wish).where(Wish.class_id.in_(class_ids))
-        
-        if class_id:
-            query = query.where(Wish.class_id == class_id)
-        if status is not None:
-            query = query.where(Wish.status == status)
+        """获取公共心愿墙（匿名和非匿名）"""
+        query = select(Wish).where(Wish.is_deleted == 0)
         
         count_query = select(func.count()).select_from(query.subquery())
         total = (await db.execute(count_query)).scalar() or 0
@@ -104,3 +77,24 @@ class WishService:
         wishes = result.scalars().all()
         
         return wishes, total
+    
+    @staticmethod
+    async def delete_wish(
+        db: AsyncSession,
+        wish_id: int,
+        user_id: int
+    ) -> bool:
+        """软删除心愿便利贴"""
+        wish = await db.execute(
+            select(Wish).where(Wish.id == wish_id, Wish.user_id == user_id)
+        )
+        wish = wish.scalar_one_or_none()
+        
+        if not wish:
+            return False
+        
+        wish.is_deleted = 1
+        await db.commit()
+        
+        logger.info(f"用户 {user_id} 删除心愿便利贴: {wish_id}")
+        return True

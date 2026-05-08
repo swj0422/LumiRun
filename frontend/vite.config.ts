@@ -21,17 +21,24 @@ export default defineConfig({
     port: 3002,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path,
-        ws: true
+        ws: true,
+        configure: (proxy, options) => {
+          proxy.on('upgrade', (req, socket, head) => {
+            const options = {
+              target: 'http://localhost:8000',
+              ws: true
+            };
+            proxy.ws(req, socket, head, options);
+          });
+        }
       },
       '/uploads': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path
+        secure: false
       }
     }
   },

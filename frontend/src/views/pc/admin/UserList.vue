@@ -7,67 +7,6 @@
       </button>
     </div>
 
-    <!-- 创建用户弹窗 -->
-    <div
-      v-if="showCreateModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">创建用户</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >真实姓名</label
-            >
-            <input
-              v-model="createForm.real_name"
-              type="text"
-              class="input w-full"
-              placeholder="请输入真实姓名"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >邮箱</label
-            >
-            <input
-              v-model="createForm.email"
-              type="email"
-              class="input w-full"
-              placeholder="请输入邮箱"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >密码</label
-            >
-            <input
-              v-model="createForm.password"
-              type="password"
-              class="input w-full"
-              placeholder="请输入密码（至少6位，包含大小写字母）"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >角色</label
-            >
-            <select v-model="createForm.role_id" class="input w-full">
-              <option value="2">管理员</option>
-              <option value="3">导师</option>
-              <option value="4">学员</option>
-            </select>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button @click="showCreateModal = false" class="btn-secondary">
-              取消
-            </button>
-            <button @click="createUser" class="btn-primary">创建</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="bg-white rounded-lg shadow p-4">
       <div class="flex flex-wrap gap-4">
         <div class="flex-1 min-w-[200px]">
@@ -102,29 +41,22 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               用户
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               角色
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               状态
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              最后登录
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               注册时间
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               操作
             </th>
           </tr>
@@ -133,80 +65,57 @@
           <tr v-for="user in users" :key="user.id">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
-                <div
-                  class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center"
-                >
-                  <span class="text-gray-600 font-medium">{{
-                    user.real_name?.charAt(0)
-                  }}</span>
+                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600 font-medium">{{ user.real_name?.charAt(0) }}</span>
                 </div>
                 <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ user.real_name }}
-                  </div>
+                  <div class="text-sm font-medium text-gray-900">{{ user.real_name }}</div>
                   <div class="text-sm text-gray-500">{{ user.email }}</div>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="getRoleClass(user.role_id)"
-                class="px-2 py-1 text-xs rounded-full"
-              >
+              <span :class="getRoleClass(user.role_id)" class="px-2 py-1 text-xs rounded-full">
                 {{ user.role_name }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
-                :class="
-                  user.status
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                "
+                :class="user.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                 class="px-2 py-1 text-xs rounded-full"
               >
                 {{ user.status ? '启用' : '禁用' }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ user.last_login_time ? formatDate(user.last_login_time) : '-' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ formatDate(user.created_at) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
-              <!-- 超级管理员不能操作自己 -->
-              <template
-                v-if="user.role_id === 1 && user.id === userStore.userInfo?.id"
-              >
-                <span class="text-gray-400">无法操作</span>
+              <template v-if="user.role_id === 1 && user.id === userStore.userInfo?.id">
+                <span class="text-gray-400">当前账号</span>
               </template>
               <template v-else>
-                <template v-if="!user.status && user.role_id === 3">
+                <div class="flex flex-wrap gap-2">
+                  <template v-if="!user.status && user.role_id === 3">
+                    <button @click="approveUser(user.id)" class="text-green-600 hover:text-green-700">通过</button>
+                    <button @click="rejectUser(user.id)" class="text-red-600 hover:text-red-700">拒绝</button>
+                  </template>
+                  <template v-else>
+                    <button v-if="user.status" @click="disableUser(user.id)" class="text-red-600 hover:text-red-700">禁用</button>
+                    <button v-else @click="enableUser(user.id)" class="text-green-600 hover:text-green-700">启用</button>
+                  </template>
+                  <button @click="resetPassword(user.id)" class="text-blue-600 hover:text-blue-700">重置密码</button>
                   <button
-                    @click="approveUser(user.id)"
-                    class="text-green-600 hover:text-green-700 mr-2"
+                    v-if="isSuperAdmin"
+                    @click="openRoleModal(user)"
+                    class="text-purple-600 hover:text-purple-700"
                   >
-                    通过
+                    编辑角色
                   </button>
-                  <button
-                    @click="rejectUser(user.id)"
-                    class="text-red-600 hover:text-red-700 mr-2"
-                  >
-                    拒绝
-                  </button>
-                </template>
-                <button
-                  v-if="user.status"
-                  @click="disableUser(user.id)"
-                  class="text-red-600 hover:text-red-700"
-                >
-                  禁用
-                </button>
-                <button
-                  v-else-if="user.role_id !== 3"
-                  @click="enableUser(user.id)"
-                  class="text-green-600 hover:text-green-700"
-                >
-                  启用
-                </button>
+                </div>
               </template>
             </td>
           </tr>
@@ -217,13 +126,78 @@
         <p class="text-gray-500">暂无用户数据</p>
       </div>
     </div>
+
+    <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">创建用户</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">真实姓名</label>
+            <input v-model="createForm.real_name" type="text" class="input w-full" placeholder="请输入真实姓名" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+            <input v-model="createForm.email" type="email" class="input w-full" placeholder="请输入邮箱" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+            <input v-model="createForm.password" type="password" class="input w-full" placeholder="请输入密码（至少6位）" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">角色</label>
+            <select v-model="createForm.role_id" class="input w-full">
+              <option value="2">管理员</option>
+              <option value="3">导师</option>
+              <option value="4">学员</option>
+            </select>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button @click="showCreateModal = false" class="btn-secondary">取消</button>
+            <button @click="createUser" class="btn-primary">创建</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">编辑用户角色</h2>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm text-gray-600 mb-2">用户: {{ selectedUser?.real_name }}</p>
+            <label class="block text-sm font-medium text-gray-700 mb-1">选择角色</label>
+            <select v-model="roleForm.role_id" class="input w-full">
+              <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.role_name }}</option>
+            </select>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button @click="showRoleModal = false" class="btn-secondary">取消</button>
+            <button @click="updateUserRole" class="btn-primary">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">密码已重置</h2>
+        <p class="text-gray-600 mb-4">用户密码已重置为默认密码：</p>
+        <div class="bg-gray-100 p-4 rounded-lg text-center mb-4">
+          <span class="text-xl font-bold text-primary-600">{{ defaultPassword }}</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">请将此密码告知用户，并提醒用户登录后及时修改密码。</p>
+        <div class="flex justify-end">
+          <button @click="showPasswordModal = false" class="btn-primary">确定</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import request from '@/api/request';
 import { useUserStore } from '@/stores/user';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 interface User {
@@ -234,50 +208,61 @@ interface User {
   role_id: number;
   role_name: string;
   status: boolean;
+  last_login_time?: string;
   created_at: string;
+}
+
+interface Role {
+  id: number;
+  role_name: string;
 }
 
 const route = useRoute();
 const userStore = useUserStore();
 
 const users = ref<User[]>([]);
+const roles = ref<Role[]>([]);
 const searchKeyword = ref('');
 const selectedRole = ref('');
 const selectedStatus = ref('');
 const showCreateModal = ref(false);
+const showRoleModal = ref(false);
+const showPasswordModal = ref(false);
+const selectedUser = ref<User | null>(null);
+const defaultPassword = ref('');
 
-interface CreateForm {
-  real_name: string;
-  email: string;
-  password: string;
-  role_id: number;
-}
+const isSuperAdmin = computed(() => userStore.userInfo?.role_id === 1);
 
-const createForm = ref<CreateForm>({
+const createForm = ref({
   real_name: '',
   email: '',
   password: '',
   role_id: 2,
 });
 
+const roleForm = ref({
+  role_id: 2,
+});
+
 const fetchUsers = async () => {
   try {
     const params: Record<string, any> = {};
-    if (selectedRole.value) {
-      params.role_id = selectedRole.value;
-    }
-    if (selectedStatus.value) {
-      params.status = selectedStatus.value === 'true';
-    }
-    if (searchKeyword.value) {
-      params.keyword = searchKeyword.value;
-    }
-    const data = (await request.get('/v1/admin/users', { params })) as {
-      items: User[];
-    };
+    if (selectedRole.value) params.role_id = selectedRole.value;
+    if (selectedStatus.value) params.status = selectedStatus.value === 'true';
+    if (searchKeyword.value) params.keyword = searchKeyword.value;
+    const data = (await request.get('/api/v1/admin/users', { params })) as { items: User[] };
     users.value = data.items || [];
   } catch (error) {
     console.error('获取用户列表失败:', error);
+  }
+};
+
+const fetchRoles = async () => {
+  try {
+    const data = (await request.get('/api/v1/role/roles')) as { items: Role[] };
+    roles.value = data.items || [];
+  } catch (error) {
+    console.error('获取角色列表失败:', error);
   }
 };
 
@@ -287,7 +272,7 @@ const handleSearch = () => {
 
 const approveUser = async (id: number) => {
   try {
-    await request.post(`/v1/admin/users/${id}/approve`);
+    await request.post(`/api/v1/admin/users/${id}/approve`);
     fetchUsers();
   } catch (error) {
     console.error('审核失败:', error);
@@ -295,8 +280,9 @@ const approveUser = async (id: number) => {
 };
 
 const rejectUser = async (id: number) => {
+  if (!confirm('确定要拒绝该用户的注册申请吗？')) return;
   try {
-    await request.post(`/v1/admin/users/${id}/reject`);
+    await request.post(`/api/v1/admin/users/${id}/reject`);
     fetchUsers();
   } catch (error) {
     console.error('拒绝失败:', error);
@@ -304,8 +290,9 @@ const rejectUser = async (id: number) => {
 };
 
 const disableUser = async (id: number) => {
+  if (!confirm('确定要禁用该用户吗？')) return;
   try {
-    await request.post(`/v1/admin/users/${id}/disable`);
+    await request.post(`/api/v1/admin/users/${id}/disable`);
     fetchUsers();
   } catch (error) {
     console.error('禁用用户失败:', error);
@@ -314,28 +301,53 @@ const disableUser = async (id: number) => {
 
 const enableUser = async (id: number) => {
   try {
-    await request.post(`/v1/admin/users/${id}/enable`);
+    await request.post(`/api/v1/admin/users/${id}/enable`);
     fetchUsers();
   } catch (error) {
     console.error('启用用户失败:', error);
   }
 };
 
+const resetPassword = async (id: number) => {
+  if (!confirm('确定要重置该用户的密码吗？')) return;
+  try {
+    const data = (await request.post(`/api/v1/admin/users/${id}/reset-password`)) as { default_password: string };
+    defaultPassword.value = data.default_password;
+    showPasswordModal.value = true;
+  } catch (error) {
+    console.error('重置密码失败:', error);
+  }
+};
+
+const openRoleModal = (user: User) => {
+  selectedUser.value = user;
+  roleForm.value.role_id = user.role_id;
+  showRoleModal.value = true;
+};
+
+const updateUserRole = async () => {
+  if (!selectedUser.value) return;
+  try {
+    await request.put(`/api/v1/admin/users/${selectedUser.value.id}/role`, {
+      role_id: roleForm.value.role_id,
+    });
+    showRoleModal.value = false;
+    fetchUsers();
+  } catch (error) {
+    console.error('修改角色失败:', error);
+  }
+};
+
 const createUser = async () => {
   try {
-    await request.post('/v1/auth/register', {
+    await request.post('/api/v1/auth/register', {
       real_name: createForm.value.real_name,
       email: createForm.value.email,
       password: createForm.value.password,
       role_id: createForm.value.role_id,
     });
     showCreateModal.value = false;
-    createForm.value = {
-      real_name: '',
-      email: '',
-      password: '',
-      role_id: 2,
-    };
+    createForm.value = { real_name: '', email: '', password: '', role_id: 2 };
     fetchUsers();
   } catch (error) {
     console.error('创建用户失败:', error);
@@ -359,12 +371,8 @@ const formatDate = (date: string) => {
 watch(
   () => route.query,
   (query) => {
-    if (query.role_id) {
-      selectedRole.value = query.role_id as string;
-    }
-    if (query.status !== undefined) {
-      selectedStatus.value = query.status as string;
-    }
+    if (query.role_id) selectedRole.value = query.role_id as string;
+    if (query.status !== undefined) selectedStatus.value = query.status as string;
     fetchUsers();
   },
   { immediate: true }
@@ -372,12 +380,9 @@ watch(
 
 onMounted(() => {
   const query = route.query;
-  if (query.role_id) {
-    selectedRole.value = query.role_id as string;
-  }
-  if (query.status !== undefined) {
-    selectedStatus.value = query.status as string;
-  }
+  if (query.role_id) selectedRole.value = query.role_id as string;
+  if (query.status !== undefined) selectedStatus.value = query.status as string;
   fetchUsers();
+  fetchRoles();
 });
 </script>

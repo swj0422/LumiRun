@@ -1,24 +1,21 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, Boolean, String, Text
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
 class Wish(Base):
-    """学员心愿表"""
+    """心愿便利贴表"""
     __tablename__ = "wish"
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("sys_user.id"), nullable=False, comment="学员ID")
-    class_id = Column(Integer, ForeignKey("class_info.id"), nullable=False, comment="班级ID")
-    title = Column(String(100), nullable=False, comment="心愿标题")
-    description = Column(Text, comment="心愿描述")
-    image_urls = Column(String(500), comment="图片URL，逗号分隔，最多3张")
-    status = Column(Integer, default=0, nullable=False, comment="心愿状态：0-待处理，1-已实现，2-已拒绝")
-    teacher_comment = Column(Text, comment="导师回复")
-    created_at = Column(DateTime, default=datetime.now, nullable=False, comment="心愿创建时间")
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, comment="心愿更新时间")
+    user_id = Column(Integer, ForeignKey("sys_user.id"), nullable=False, comment="发布人ID")
+    class_student_id = Column(Integer, ForeignKey("class_student.id"), nullable=True, comment="学员ID（关联绑定记录，可选）")
+    content = Column(String(200), nullable=False, comment="心愿文字内容（1-200字）")
+    image_url = Column(String(255), nullable=True, comment="图片地址")
+    is_anonymous = Column(Integer, default=0, nullable=False, comment="是否匿名：1-匿名，0-不匿名")
+    is_deleted = Column(Integer, default=0, nullable=False, comment="是否已删除：0-正常，1-已删除")
+    created_at = Column(DateTime, default=datetime.now, nullable=False, comment="发布时间")
     
     # 关系
     user = relationship("User", back_populates="user_wishes")
-    class_info = relationship("ClassInfo")

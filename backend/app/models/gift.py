@@ -24,4 +24,3 @@ class Gift(Base):
     orders = relationship("GiftOrder", back_populates="gift")
     stock = relationship("GiftStock", back_populates="gift", uselist=False)
     class_relations = relationship("GiftClassRelation", back_populates="gift")
-    gift_wishes = relationship("Wish", back_populates="gift")

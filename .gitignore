@@ -1,44 +1,99 @@
 # ================ 虚拟环境和依赖 ================
+# Python虚拟环境
 .venv/
-.env
+.env/
+
+# Node.js依赖（前端）
 frontend/node_modules/
-backend/node_modules/
+
+# ================ 环境变量配置 ================
+# 本地环境配置（不应提交）
+.env
+.env.local
+.env.*.local
 
 # ================ 构建产物 ================
+# 前端构建输出
 frontend/dist/
-*.pyc
-__pycache__/
 
-# ================ 日志和数据库 ================
+# Python编译文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ================ 日志和缓存 ================
+# 日志文件
 *.log
 logs/
-*.sqlite3
 
-# ================ 上传文件 ================
+# 缓存文件
+.cache/
+*.egg-info/
+
+# ================ 上传文件和数据 ================
+# 上传目录
 backend/uploads/
 
-# ================ 备份和临时文件 ================
-*.bak
-*.backup
-*.tmp
-*.temp
+# SQLite数据库（如果使用）
+*.sqlite3
+*.db
 
-# ================ IDE配置 ================
-.vscode/
-.idea/
+# ================ IDE和编辑器配置 ================
+# Trae IDE
 .trae/
-*.swp
-*.swo
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains (PyCharm, IntelliJ等)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
 *.sublime-project
 *.sublime-workspace
 
+# Vim
+*.swp
+*.swo
+
 # ================ 操作系统文件 ================
+# Windows
 Thumbs.db
-.DS_Store
 desktop.ini
 $RECYCLE.BIN/
 
-# ================ 脚本文件（开发用） ================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# ================ Docker和容器 ================
+# Docker构建缓存
+.dockerignore
+
+# ================ 临时和备份文件 ================
+# 临时文件
+*.tmp
+*.temp
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# ================ 开发工具脚本 ================
+# 本地开发脚本（已删除，但保留规则）
 create_admin.py
 debug-backend.bat
 debug-frontend.bat
@@ -52,17 +107,17 @@ start
 start-all.bat
 start-backend.ps1
 stop-all.bat
+restart_backend.cmd
+restart_server.ps1
 
-# ================ 归档目录 ================
+# ================ 归档和查询目录 ================
 archive/
+query/
 
-# ================ 查询文件 ================
-query
-
-# ================ 文档文件（可选） ================
+# ================ 文档文件（可选不上传） ================
 *.docx
 *.xlsx
 *.pptx
 
-# ================ 开发调试文档（不上传） ================
+# ================ 开发调试文档 ================
 DEBUG-GUIDE.md
