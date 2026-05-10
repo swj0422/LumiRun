@@ -1,6 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Skip Node.js platform check for older Windows versions
+set NODE_SKIP_PLATFORM_CHECK=1
+
 :: Set UTF-8 encoding
 chcp 65001 >nul
 
