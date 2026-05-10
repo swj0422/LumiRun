@@ -28,16 +28,15 @@ class Growth(Base):
     input_type = Column(Integer, default=1, comment="录入方式：1-手动录入，2-语音录入，3-批量导入，4-系统调整")
     class_status = Column(Boolean, comment="操作时的班级状态")
     created_at = Column(DateTime, default=datetime.utcnow, comment="变动时间")
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, comment="最后修改时间")
-    
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, comment="最后修改时间")    
     # 关系
-    # 移除与 User 模型的直接关系，使用 class_student 间接关联
+    # 移除User 模型的直接关系，使用 class_student 间接关联
     # user = relationship("User", back_populates="growth_logs", foreign_keys=[user_id])
     class_student = relationship("ClassStudent", back_populates="growth_logs")
     class_info = relationship("ClassInfo", back_populates="growth_logs")
     teacher = relationship("User", foreign_keys=[teacher_id])
     operator = relationship("User", foreign_keys=[operator_id])
-    # 通过 class_student 间接关联到 student_profile
+    # 通过 class_student 间接关联?student_profile
     @property
     def student_profile(self):
         if self.class_student:

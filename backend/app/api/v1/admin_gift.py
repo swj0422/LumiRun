@@ -90,12 +90,24 @@ async def get_gift_detail(
             detail="礼品不存在"
         )
     
+    stock_result = await db.execute(select(GiftStock).where(GiftStock.gift_id == gift.id))
+    stock = stock_result.scalar_one_or_none()
+    
+    stock_info = {
+        "id": stock.id,
+        "gift_id": stock.gift_id,
+        "current_stock": stock.current_stock,
+        "total_in_stock": stock.total_in_stock,
+        "total_out_stock": stock.total_out_stock,
+        "updated_at": stock.updated_at
+    } if stock else {}
+    
     return {
         "id": gift.id,
         "name": gift.name,
         "description": gift.description,
         "price": gift.price,
-        "stock": gift.stock,
+        "stock": stock_info,
         "status": gift.status,
         "image_url": gift.image_url,
         "created_at": gift.created_at,
@@ -121,6 +133,10 @@ async def delete_gift(
     
     gift_name = gift.name
     
+    stock_result = await db.execute(select(GiftStock).where(GiftStock.gift_id == gift.id))
+    stock = stock_result.scalar_one_or_none()
+    stock_info = f'{{"current_stock": {stock.current_stock}}}' if stock else '{}'
+    
     await db.execute(text("DELETE FROM gift_order WHERE gift_id = :gift_id"), {"gift_id": gift_id})
     await db.execute(text("DELETE FROM gift_order_log WHERE gift_id = :gift_id"), {"gift_id": gift_id})
     
@@ -137,7 +153,7 @@ async def delete_gift(
         biz_type="gift",
         biz_id=gift_id,
         request_params=f'{{"gift_id": {gift_id}}}',
-        before_data=f'{{"礼品名称": "{gift_name}", "价格": {gift.price}, "库存": {gift.stock}}}'
+        before_data=f'{{"礼品名称": "{gift_name}", "价格": {gift.price}, "库存": {stock_info}}}'
     )
     db.add(system_log)
     
