@@ -112,29 +112,46 @@ if !errorLevel! neq 0 (
     exit /b 1
 )
 
+set "PIP_MIRROR=https://mirrors.aliyun.com/pypi/simple/"
+
 pip install -r "%BACKEND_DIR%\requirements.txt"
 if !errorLevel! equ 0 (
     echo OK: Python dependencies installed successfully
 ) else (
-    echo ERROR: Failed to install Python dependencies!
-    echo        Please check network connection
-    pause
-    exit /b 1
+    echo WARN: Failed to install with default source, trying China mirror...
+    pip install -r "%BACKEND_DIR%\requirements.txt" -i %PIP_MIRROR% --trusted-host mirrors.aliyun.com
+    if !errorLevel! equ 0 (
+        echo OK: Python dependencies installed successfully with China mirror
+    ) else (
+        echo ERROR: Failed to install Python dependencies!
+        echo        Please check network connection or try manual installation
+        pause
+        exit /b 1
+    )
 )
 
 echo.
 echo [STEP 4/5] Configuring frontend environment...
 
 cd "%FRONTEND_DIR%"
+set "NPM_MIRROR=https://registry.npmmirror.com/"
+
 echo [INSTALL] Node.js dependencies...
 npm install
 if !errorLevel! equ 0 (
     echo OK: Node.js dependencies installed successfully
 ) else (
-    echo ERROR: Failed to install Node.js dependencies!
-    echo        Please check network connection
-    pause
-    exit /b 1
+    echo WARN: Failed to install with default registry, trying China mirror...
+    npm config set registry %NPM_MIRROR%
+    npm install
+    if !errorLevel! equ 0 (
+        echo OK: Node.js dependencies installed successfully with China mirror
+    ) else (
+        echo ERROR: Failed to install Node.js dependencies!
+        echo        Please check network connection
+        pause
+        exit /b 1
+    )
 )
 
 echo [BUILD] Frontend project...
