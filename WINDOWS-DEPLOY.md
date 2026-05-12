@@ -40,8 +40,14 @@
 2. 脚本会自动：
    - 检查系统环境
    - 创建必要目录
-   - 安装依赖
+   - 创建虚拟环境（位于项目根目录 `.venv`）
+   - 安装依赖（支持国内镜像自动切换）
    - 配置环境文件
+
+> **国内镜像支持**：
+> - 如果默认源安装失败，脚本会自动尝试使用国内镜像
+> - Python 依赖使用：阿里云 PyPI 镜像
+> - Node.js 依赖使用：npmmirror 镜像
 
 #### 方法二：手动部署
 
@@ -88,25 +94,40 @@ npm run build
 ### 3. 启动系统
 
 #### 使用启动脚本（推荐）
-```powershell
-start-all.bat
+
+**启动后端服务**：
+```cmd
+cd /d "D:\LumiRun-master\backend"
+start_backend.cmd
 ```
 
+**启动前端服务**：
+```cmd
+cd /d "D:\LumiRun-master\frontend"
+npm run dev
+```
+
+> **说明**：
+> - 启动脚本会自动读取 `.env` 文件中的配置（如 PORT）
+> - 不需要手动激活虚拟环境，脚本会自动使用虚拟环境中的 Python
+> - 后端默认端口：8000，前端默认端口：3002
+
 #### 手动启动
-```powershell
+```cmd
 # 终端1 - 启动后端
-cd backend
+cd /d "D:\LumiRun-master"
 .venv\Scripts\activate
+cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000
 
 # 终端2 - 启动前端
-cd frontend
+cd /d "D:\LumiRun-master\frontend"
 npm run dev
 ```
 
 ### 4. 访问系统
 
-- **前端页面**: http://localhost:5173
+- **前端页面**: http://localhost:3002
 - **后端API**: http://localhost:8000
 - **API文档**: http://localhost:8000/docs
 - **Swagger UI**: http://localhost:8000/swagger
@@ -217,7 +238,7 @@ nssm start LumiRunBackend
 New-NetFirewallRule -DisplayName "LumiRun Backend" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
 
 # 允许前端端口（开发环境）
-New-NetFirewallRule -DisplayName "LumiRun Frontend" -Direction Inbound -LocalPort 5173 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "LumiRun Frontend" -Direction Inbound -LocalPort 3002 -Protocol TCP -Action Allow
 ```
 
 ## 常见问题
