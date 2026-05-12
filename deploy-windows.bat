@@ -168,7 +168,7 @@ if !errorLevel! equ 0 (
 )
 
 echo.
-echo [STEP 5/5] Configuring environment variables...
+echo [STEP 5/6] Configuring environment variables...
 
 :: Copy environment templates
 if not exist "%BACKEND_DIR%\.env" (
@@ -196,9 +196,40 @@ if not exist "%FRONTEND_DIR%\.env.local" (
 )
 
 echo.
+echo [STEP 6/6] Initializing database...
+
+:: Initialize database tables and data
+echo [INIT] Creating database tables...
+python "%BACKEND_DIR%\init_db.py"
+if !errorLevel! equ 0 (
+    echo OK: Database tables created successfully
+) else (
+    echo WARN: Failed to create database tables. Please check your database configuration.
+)
+
+echo [INIT] Initializing roles, users and permissions...
+python "%BACKEND_DIR%\init_data.py"
+if !errorLevel! equ 0 (
+    echo OK: Database data initialized successfully
+) else (
+    echo WARN: Failed to initialize database data. Please check your database configuration.
+)
+
+echo.
 echo ==============================================
 echo DEPLOYMENT COMPLETED SUCCESSFULLY!
 echo ==============================================
+echo.
+echo Default Accounts:
+echo ┌─────────────────────────────┬──────────┬──────────────┬─────────────┐
+echo │ Email                       │ Username │ Password     │ Role        │
+echo ├─────────────────────────────┼──────────┼──────────────┼─────────────┤
+echo │ admin@example.com           │ admin    │ Password123  │ Super Admin │
+echo │ teacher@example.com         │ teacher  │ Password123  │ Teacher     │
+echo │ student@example.com         │ student  │ Password123  │ Student     │
+echo └─────────────────────────────┴──────────┴──────────────┴─────────────┘
+echo.
+echo ⚠️  Security: Please change default passwords after first login!
 echo.
 echo How to start the application:
 echo -----------------------------

@@ -56,7 +56,40 @@ start-all.bat
 # API文档: http://localhost:8000/docs
 ```
 
+**部署脚本会自动完成**：
+- 环境检查（Python、Node.js、MySQL）
+- 依赖安装（支持国内镜像）
+- 数据库表结构初始化
+- **角色、用户和权限数据初始化**
+- 默认账号创建（admin、teacher、student）
+
 详细部署指南请参考 [WINDOWS-DEPLOY.md](WINDOWS-DEPLOY.md)
+
+### Linux 部署
+
+```bash
+# 1. 赋予执行权限
+chmod +x deploy.sh
+
+# 2. 运行部署脚本
+./deploy.sh
+
+# 3. 启动系统
+# 后端: cd backend && source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8000
+# 前端: cd frontend && npm run dev
+```
+
+### 默认账号
+
+部署完成后，系统会自动初始化以下账号：
+
+| 邮箱 | 用户名 | 密码 | 角色 |
+| --- | --- | --- | --- |
+| admin@example.com | admin | Password123 | 超级管理员 |
+| teacher@example.com | teacher | Password123 | 导师 |
+| student@example.com | student | Password123 | 学员 |
+
+**安全提示**：⚠️ 首次登录后请立即修改默认密码！
 
 ### Docker 部署
 

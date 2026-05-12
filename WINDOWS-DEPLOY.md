@@ -43,11 +43,19 @@
    - 创建虚拟环境（位于项目根目录 `.venv`）
    - 安装依赖（支持国内镜像自动切换）
    - 配置环境文件
+   - **初始化数据库表结构**
+   - **初始化角色、用户和权限数据**
 
 > **国内镜像支持**：
 > - 如果默认源安装失败，脚本会自动尝试使用国内镜像
 > - Python 依赖使用：阿里云 PyPI 镜像
 > - Node.js 依赖使用：npmmirror 镜像
+
+> **数据初始化**：
+> - 脚本会自动创建数据库表结构
+> - 自动初始化 4 个角色（超级管理员、管理员、导师、学员）
+> - 自动创建 3 个测试账号（admin、teacher、student）
+> - 自动初始化完整的权限体系（12个菜单权限 + 44个按钮权限）
 
 #### 方法二：手动部署
 
@@ -70,8 +78,11 @@ copy .env.example .env
 # 编辑 .env 文件，配置数据库连接
 notepad .env
 
-# 初始化数据库
+# 初始化数据库表结构
 python init_db.py
+
+# 初始化角色、用户和权限数据
+python init_data.py
 
 # 启动后端服务
 uvicorn main:app --host 0.0.0.0 --port 8000
@@ -131,6 +142,33 @@ npm run dev
 - **后端API**: http://localhost:8000
 - **API文档**: http://localhost:8000/docs
 - **Swagger UI**: http://localhost:8000/swagger
+
+### 5. 默认账号
+
+部署完成后，系统会自动初始化以下账号：
+
+| 邮箱 | 用户名 | 密码 | 角色 |
+| --- | --- | --- | --- |
+| admin@example.com | admin | Password123 | 超级管理员 |
+| teacher@example.com | teacher | Password123 | 导师 |
+| student@example.com | student | Password123 | 学员 |
+
+**角色权限说明**：
+- **超级管理员**：拥有系统所有权限，包括用户管理、角色管理、权限管理、系统设置等
+- **管理员**：可管理用户、班级、学员、礼品、订单等业务数据，但不能管理角色和权限
+- **导师**：可管理自己的班级、学员、成长值、奖励等
+- **学员**：可查看自己的成长值、兑换奖励等
+
+**安全提示**：
+⚠️ 首次登录后请立即修改默认密码！
+
+**手动初始化数据**：
+如果需要重新初始化数据，可以运行以下命令：
+```powershell
+cd backend
+python init_db.py      # 初始化数据库表结构
+python init_data.py    # 初始化角色、用户和权限数据
+```
 
 ## 配置说明
 
