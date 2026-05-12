@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.gift import Gift
 from app.models.gift_class_relation import GiftClassRelation as GiftClass
 from app.models.class_info import ClassInfo
-from app.schemas.gift import GiftCreate, GiftUpdate
+from app.schemas.gift import GiftCreate, GiftUpdate, GiftClassCreate
 from app.core.logger import logger
 import os
 from app.core.config import get_settings
