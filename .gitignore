@@ -92,24 +92,6 @@ $RECYCLE.BIN/
 *.backup
 *.old
 
-# ================ 开发工具脚本 ================
-# 本地开发脚本（已删除，但保留规则）
-create_admin.py
-debug-backend.bat
-debug-frontend.bat
-deploy-windows.bat
-gen_hash.py
-install-frontend-deps.ps1
-test-login.js
-test-windows.bat
-update_admin_pwd.sql
-start
-start-all.bat
-start-backend.ps1
-stop-all.bat
-restart_backend.cmd
-restart_server.ps1
-
 # ================ 归档和查询目录 ================
 archive/
 query/

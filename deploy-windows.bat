@@ -202,19 +202,17 @@ echo ==============================================
 echo.
 echo How to start the application:
 echo -----------------------------
-echo 1. Open a new Command Prompt
-echo 2. Run these commands:
-echo    cd /d "d:\LumiRun\LumiRun"
-echo    cd backend
-echo    .venv\Scripts\activate
-echo    uvicorn app.main:app --host 0.0.0.0 --port 8000
+echo 1. Open a new Command Prompt for backend:
+echo    cd /d "d:\LumiRun\LumiRun\backend"
+echo    start_backend.cmd
 echo.
-echo 3. Open another Command Prompt
-echo 4. Run these commands:
-echo    cd /d "d:\LumiRun\LumiRun"
-echo    cd frontend
+echo 2. Open another Command Prompt for frontend:
+echo    cd /d "d:\LumiRun\LumiRun\frontend"
 echo    npm run dev
 echo.
-echo Access URL: http://localhost:3003
+echo Access URLs:
+echo    - Frontend: http://localhost:3002
+echo    - Backend API: http://localhost:8000
+echo    - API Docs: http://localhost:8000/docs
 echo.
 pause

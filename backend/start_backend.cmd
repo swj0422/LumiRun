@@ -29,7 +29,7 @@ set "VENV_PYTHON=..\.venv\Scripts\python.exe"
 if not exist "%VENV_PYTHON%" set "VENV_PYTHON=.venv\Scripts\python.exe"
 
 if exist "%VENV_PYTHON%" (
-    "%VENV_PYTHON%" -m uvicorn app.main:app --host %HOST% --port %PORT%
+    "%VENV_PYTHON%" -m uvicorn main:app --host %HOST% --port %PORT%
 ) else (
     echo ERROR: Virtual environment not found!
     echo Please run deploy-windows.bat first
