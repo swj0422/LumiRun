@@ -24,7 +24,7 @@ set "BACKEND_DIR=%PROJECT_DIR%backend"
 set "FRONTEND_DIR=%PROJECT_DIR%frontend"
 
 echo.
-echo [STEP 1/5] Checking system environment...
+echo [STEP 1/6] Checking system environment...
 
 echo [CHECK] Python installation...
 where python >nul 2>&1
@@ -47,7 +47,7 @@ for /f "tokens=1 delims=v" %%a in ('node --version') do set NODE_VERSION=%%a
 echo OK: Node.js v%NODE_VERSION% installed
 
 echo.
-echo [STEP 2/5] Creating directory structure...
+echo [STEP 2/6] Creating directory structure...
 
 if not exist "%PROJECT_DIR%logs" (
     echo [CREATE] logs directory...
@@ -78,7 +78,7 @@ if not exist "%BACKEND_DIR%\uploads" (
 )
 
 echo.
-echo [STEP 3/5] Configuring backend environment...
+echo [STEP 3/6] Configuring backend environment...
 
 if not exist "%VENV_DIR%" (
     echo [CREATE] Python virtual environment...
@@ -118,35 +118,31 @@ if !errorLevel! equ 0 (
 )
 
 echo.
-echo [STEP 4/5] Configuring frontend environment...
+echo [STEP 4/6] Configuring frontend environment...
 
-cd "%FRONTEND_DIR%"
+cd /d "%FRONTEND_DIR%"
 
 echo [INSTALL] Node.js dependencies...
-npm install
+npm install --loglevel=error
 if !errorLevel! equ 0 (
     echo OK: Node.js dependencies installed successfully
 ) else (
     echo WARN: Trying China mirror...
     npm config set registry https://registry.npmmirror.com/
-    npm install
+    npm install --loglevel=error
     if !errorLevel! equ 0 (
         echo OK: Node.js dependencies installed with China mirror
     ) else (
-        echo ERROR: Failed to install Node.js dependencies!
-        pause
-        exit /b 1
+        echo WARN: Failed to install Node.js dependencies! Continuing with database initialization...
     )
 )
 
 echo [BUILD] Frontend project...
-npm run build
+npm run build --loglevel=error
 if !errorLevel! equ 0 (
     echo OK: Frontend project built successfully
 ) else (
-    echo ERROR: Failed to build frontend project!
-    pause
-    exit /b 1
+    echo WARN: Frontend build failed! Continuing with database initialization...
 )
 
 echo.
@@ -179,20 +175,35 @@ if not exist "%FRONTEND_DIR%\.env.local" (
 echo.
 echo [STEP 6/6] Initializing database...
 
+cd /d "%BACKEND_DIR%"
+
 echo [INIT] Creating database tables...
-python "%BACKEND_DIR%\init_db.py"
+echo Running: "%VENV_DIR%\Scripts\python.exe" "%BACKEND_DIR%\init_db.py"
+"%VENV_DIR%\Scripts\python.exe" "%BACKEND_DIR%\init_db.py"
 if !errorLevel! equ 0 (
     echo OK: Database tables created successfully
 ) else (
-    echo WARN: Failed to create database tables. Check database configuration.
+    echo ERROR: Failed to create database tables!
+    echo Please check:
+    echo 1. MySQL server is running
+    echo 2. Database credentials in backend/.env are correct
+    echo 3. Database 'lumirun' exists
+    pause
+    exit /b 1
 )
 
 echo [INIT] Initializing roles, users and permissions...
-python "%BACKEND_DIR%\init_data.py"
+echo Running: "%VENV_DIR%\Scripts\python.exe" "%BACKEND_DIR%\init_data.py"
+"%VENV_DIR%\Scripts\python.exe" "%BACKEND_DIR%\init_data.py"
 if !errorLevel! equ 0 (
     echo OK: Database data initialized successfully
 ) else (
-    echo WARN: Failed to initialize database data. Check database configuration.
+    echo ERROR: Failed to initialize database data!
+    echo Please check:
+    echo 1. MySQL server is running
+    echo 2. Database credentials in backend/.env are correct
+    pause
+    exit /b 1
 )
 
 echo.

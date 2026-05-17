@@ -113,8 +113,8 @@ async def login(
             key="token",
             value=access_token,
             httponly=True,
-            secure=False,  # 开发环境使用False，生产环境应设置为True
-            samesite="lax",
+            secure=not settings.DEBUG,  # 根据环境动态设置secure
+            samesite="strict" if not settings.DEBUG else "lax",  # 生产环境使用strict
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/"  # 设置Cookie的路径为根路径，这样所有接口都能访问到
         )

@@ -24,8 +24,15 @@
 
 ### Node.js
 - **最低版本**: 16.0
-- **推荐版本**: 18 LTS 或 20 LTS
-- **下载地址**: https://nodejs.org/
+- **推荐版本**: 
+  - **Windows 10/11 / Server 2016+**: 18 LTS 或 20 LTS
+  - **Windows Server 2012**: **仅支持 18 LTS**（20 LTS 及以上不兼容）
+- **关键说明**: 
+  - Windows Server 2012 不支持 Node.js 20.x 及以上版本
+  - 安装错误版本会导致 `npm run build` 失败或平台不支持警告
+- **下载地址**: 
+  - Node.js 18 LTS: https://nodejs.org/dist/v18.20.3/node-v18.20.3-x64.msi
+  - Node.js 20 LTS: https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi
 
 ### MySQL
 - **最低版本**: 8.0
@@ -123,6 +130,38 @@ innodb_flush_log_at_trx_commit = 2
 - 使用 Gunicorn + Uvicorn Workers
 
 ## 常见 Windows 问题解决
+
+### 0. Node.js 版本兼容性问题（关键）
+
+**问题描述**：
+在 Windows Server 2012 上运行 `npm run build` 时出现以下警告并构建失败：
+```
+Node.js is only supported on Windows 10, Windows Server 2016, or higher.
+```
+
+**原因**：
+- Node.js 20.x 及以上版本不再支持 Windows Server 2012
+- 安装了错误的 Node.js 版本
+
+**解决方案**：
+1. 卸载当前的 Node.js 版本
+2. 安装 **Node.js 18 LTS** 版本：
+   - 下载地址：https://nodejs.org/dist/v18.20.3/node-v18.20.3-x64.msi
+3. 验证安装：
+   ```powershell
+   node -v
+   # 应显示 v18.20.3 或类似版本
+   ```
+4. 重新构建前端：
+   ```powershell
+   cd D:\LumiRun-master\frontend
+   npm install
+   npm run build
+   ```
+
+**预防措施**：
+- 在 Windows Server 2012 上部署前，确认安装的是 Node.js 18 LTS
+- 将 Node.js 版本记录到部署文档中
 
 ### 1. 长路径问题
 Windows 默认路径长度限制为 260 字符，解决方案：

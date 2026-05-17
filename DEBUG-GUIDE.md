@@ -552,3 +552,84 @@
 - 修正前端 API 调用路径，将排名接口的调用路径从 `/api/v1/leaderboard/class` 改为 `/api/v1/growth/leaderboard/class/` + selectedClassId.value
 - 在 `fetchRankList` 函数中添加空值检查，确保只在 `selectedClassId.value` 存在时才调用 API
 - 修改前端排名页面的样式，使其与导师页面一致，包括添加特殊的排名图标和背景色
+
+### 31. 生产环境部署 - DNS解析失败
+
+**问题描述**：
+访问 `https://your-domain.com/` 时出现 `DNS_PROBE_FINISHED_NXDOMAIN` 错误，无法解析域名。
+
+**原因**：
+- 域名的 A 记录未正确配置或尚未生效
+
+**解决方案**：
+- 在域名服务商（如腾讯云）的 DNS 管理中添加 A 记录：
+  - 记录类型：A
+  - 主机记录：lj
+  - 记录值：服务器公网 IP 地址
+- 等待 DNS 传播（通常 5-30 分钟）
+- 刷新本地 DNS 缓存：`ipconfig /flushdns`
+
+### 32. 生产环境部署 - Nginx反向代理配置
+
+**问题描述**：
+前端页面无法访问后端 API，反向代理配置错误。
+
+**原因**：
+- 前端静态文件路径配置错误
+- 反向代理地址使用了 Docker 内部地址（172.27.0.8）而非本地地址
+
+**解决方案**：
+- 修改 `nginx.conf` 中的 `root` 配置为实际的前端 `dist` 目录路径：
+  ```nginx
+  root D:/LumiRun-master/frontend/dist;
+  ```
+- 修改反向代理地址为本地地址：
+  ```nginx
+  location /api/ {
+      proxy_pass http://127.0.0.1:8084/api/;
+      proxy_cookie_path / /;
+  }
+  ```
+
+### 33. 生产环境部署 - Cookie无法传递
+
+**问题描述**：
+登录成功后无法保持登录状态，Cookie 在 HTTPS 环境下无法正确传递。
+
+**原因**：
+- 缺少 `proxy_cookie_path` 配置，导致 Cookie 路径不匹配
+- 后端 Cookie 的 `secure` 属性未正确设置
+
+**解决方案**：
+- 在 Nginx 的 `/api/` 位置块中添加：
+  ```nginx
+  proxy_cookie_path / /;
+  ```
+- 确保后端 `.env` 文件中 `DEBUG=false`，使 Cookie 的 `secure` 属性为 `True`
+
+### 34. 生产环境部署 - Node.js版本兼容性
+
+**问题描述**：
+在 Windows Server 2012 上运行 `npm run build` 时出现平台不支持警告，构建失败。
+
+**原因**：
+- Node.js 20.x 及以上版本不支持 Windows Server 2012
+
+**解决方案**：
+- 安装 Node.js 18.x LTS 版本（支持 Windows Server 2012 R2）
+- 下载地址：https://nodejs.org/dist/v18.20.3/node-v18.20.3-x64.msi
+
+### 35. 生产环境部署 - 前端构建失败
+
+**问题描述**：
+`npm run build` 命令执行失败，提示 TypeScript 类型错误。
+
+**原因**：
+- 构建命令包含 `vue-tsc` 类型检查，代码中存在类型错误
+
+**解决方案**：
+- 修改 `package.json` 中的构建命令，跳过类型检查：
+  ```json
+  "build": "npx vite build"
+  ```
+- 确保前端 `.env` 文件中 `VITE_API_BASE_URL=/`

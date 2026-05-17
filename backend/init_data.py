@@ -4,11 +4,11 @@
 """
 import asyncio
 from sqlalchemy import text
-from app.core.database import AsyncSessionLocal
+from app.core.database import engine, Base
 from app.core.security import get_password_hash
 
 
-async def init_roles(session):
+async def init_roles(conn):
     """初始化角色数据"""
     roles = [
         {"id": 1, "role_name": "super_admin", "remark": "系统最高权限，可管理所有功能"},
@@ -18,7 +18,7 @@ async def init_roles(session):
     ]
     
     for role in roles:
-        await session.execute(
+        await conn.execute(
             text("""
                 INSERT INTO sys_role (id, role_name, remark)
                 VALUES (:id, :role_name, :remark)
@@ -29,7 +29,7 @@ async def init_roles(session):
     print("[OK] 角色数据初始化完成")
 
 
-async def init_users(session):
+async def init_users(conn):
     """初始化用户数据"""
     password_hash = get_password_hash("Password123")
     
@@ -70,7 +70,7 @@ async def init_users(session):
     ]
     
     for user in users:
-        await session.execute(
+        await conn.execute(
             text("""
                 INSERT INTO sys_user (id, email, username, password, real_name, phone, role_id, status, login_count)
                 VALUES (:id, :email, :username, :password, :real_name, :phone, :role_id, :status, :login_count)
@@ -86,11 +86,13 @@ async def init_users(session):
     print("[OK] 用户数据初始化完成")
 
 
-async def init_permissions(session):
+async def init_permissions(conn):
     """初始化权限数据"""
-    await session.execute(text("DELETE FROM sys_role_permission"))
-    await session.execute(text("DELETE FROM sys_permission"))
-    await session.execute(text("ALTER TABLE sys_permission AUTO_INCREMENT = 1"))
+    await conn.execute(text("DELETE FROM sys_role_permission"))
+    await conn.execute(text("SET FOREIGN_KEY_CHECKS = 0"))
+    await conn.execute(text("DELETE FROM sys_permission"))
+    await conn.execute(text("ALTER TABLE sys_permission AUTO_INCREMENT = 1"))
+    await conn.execute(text("SET FOREIGN_KEY_CHECKS = 1"))
     
     menu_permissions = [
         {"id": 1, "permission_name": "控制台", "permission_code": "menu:dashboard", "parent_id": None, "type": 1, "path": "/admin", "component": "Dashboard", "icon": "HomeOutlined", "sort": 1, "status": 1},
@@ -108,7 +110,7 @@ async def init_permissions(session):
     ]
     
     for perm in menu_permissions:
-        await session.execute(
+        await conn.execute(
             text("""
                 INSERT INTO sys_permission (id, permission_name, permission_code, parent_id, type, path, component, icon, sort, status)
                 VALUES (:id, :permission_name, :permission_code, :parent_id, :type, :path, :component, :icon, :sort, :status)
@@ -176,7 +178,7 @@ async def init_permissions(session):
     ]
     
     for perm in button_permissions:
-        await session.execute(
+        await conn.execute(
             text("""
                 INSERT INTO sys_permission (id, permission_name, permission_code, parent_id, type)
                 VALUES (:id, :permission_name, :permission_code, :parent_id, :type)
@@ -187,9 +189,9 @@ async def init_permissions(session):
     print("[OK] 权限数据初始化完成")
 
 
-async def init_role_permissions(session):
+async def init_role_permissions(conn):
     """初始化角色权限关联数据"""
-    await session.execute(
+    await conn.execute(
         text("INSERT INTO sys_role_permission (role_id, permission_id) SELECT 1, id FROM sys_permission")
     )
     
@@ -206,7 +208,7 @@ async def init_role_permissions(session):
     ]
     
     for perm_id in admin_permissions:
-        await session.execute(
+        await conn.execute(
             text("INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, :perm_id)"),
             {"perm_id": perm_id}
         )
@@ -216,30 +218,26 @@ async def init_role_permissions(session):
 
 async def init_all_data():
     """初始化所有数据"""
-    async with AsyncSessionLocal() as session:
-        try:
-            await session.begin()
+    try:
+        async with engine.begin() as conn:
+            await init_roles(conn)
+            await init_users(conn)
+            await init_permissions(conn)
+            await init_role_permissions(conn)
+        
+        print("")
+        print("[OK] 所有数据初始化成功！")
+        print("")
+        print("默认账号信息：")
+        print("admin@example.com / admin / Password123 (超级管理员)")
+        print("teacher@example.com / teacher / Password123 (导师)")
+        print("student@example.com / student / Password123 (学员)")
+        print("")
+        print("Security: 首次登录后请立即修改默认密码！")
             
-            await init_roles(session)
-            await init_users(session)
-            await init_permissions(session)
-            await init_role_permissions(session)
-            
-            await session.commit()
-            print("")
-            print("[OK] 所有数据初始化成功！")
-            print("")
-            print("默认账号信息：")
-            print("admin@example.com / admin / Password123 (超级管理员)")
-            print("teacher@example.com / teacher / Password123 (导师)")
-            print("student@example.com / student / Password123 (学员)")
-            print("")
-            print("Security: 首次登录后请立即修改默认密码！")
-            
-        except Exception as e:
-            await session.rollback()
-            print("[ERROR] 数据初始化失败: " + str(e))
-            raise
+    except Exception as e:
+        print("[ERROR] 数据初始化失败: " + str(e))
+        raise
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 ## 系统要求
 
-- **操作系统**: Windows 10/11 或 Windows Server 2016+
+- **操作系统**: Windows 7/10/11 或 Windows Server 2012+（Windows 7 需要设置环境变量）
 - **Python**: 3.10 或更高版本
 - **Node.js**: 18.0 或更高版本（LTS 版本）
 - **MySQL**: 8.0 或更高版本
@@ -57,6 +57,10 @@
 > - 自动创建 3 个测试账号（admin、teacher、student）
 > - 自动初始化完整的权限体系（12个菜单权限 + 44个按钮权限）
 
+> **Windows 7 兼容**：
+> - 脚本已自动添加 `NODE_SKIP_PLATFORM_CHECK=1` 环境变量
+> - 前端构建失败不会中断部署流程，会继续执行数据库初始化
+
 #### 方法二：手动部署
 
 **后端部署**
@@ -92,6 +96,9 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 ```powershell
 cd frontend
 
+# 设置环境变量（Windows 7 必需）
+set NODE_SKIP_PLATFORM_CHECK=1
+
 # 安装依赖
 npm install
 
@@ -101,6 +108,15 @@ npm run dev
 # 生产模式构建
 npm run build
 ```
+
+#### 方法三：仅初始化数据库
+
+如果只需要初始化数据库数据（跳过前端构建），可以使用单独的数据库初始化脚本：
+
+1. 以管理员身份运行 `init-database-only.bat`
+2. 脚本会自动：
+   - 创建数据库表结构
+   - 初始化角色、用户和权限数据
 
 ### 3. 启动系统
 
@@ -114,12 +130,12 @@ start_backend.cmd
 
 **启动前端服务**：
 ```cmd
-cd /d "D:\LumiRun-master\frontend"
-npm run dev
+cd /d "D:\LumiRun-master"
+start-frontend.bat
 ```
 
 > **说明**：
-> - 启动脚本会自动读取 `.env` 文件中的配置（如 PORT）
+> - `start-frontend.bat` 已自动设置 `NODE_SKIP_PLATFORM_CHECK=1` 环境变量
 > - 不需要手动激活虚拟环境，脚本会自动使用虚拟环境中的 Python
 > - 后端默认端口：8000，前端默认端口：3002
 
@@ -129,10 +145,11 @@ npm run dev
 cd /d "D:\LumiRun-master"
 .venv\Scripts\activate
 cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000
+start_backend.cmd
 
-# 终端2 - 启动前端
+# 终端2 - 启动前端（Windows 7 需要设置环境变量）
 cd /d "D:\LumiRun-master\frontend"
+set NODE_SKIP_PLATFORM_CHECK=1
 npm run dev
 ```
 
@@ -267,16 +284,64 @@ nssm set LumiRunBackend Start SERVICE_AUTO_START
 nssm start LumiRunBackend
 ```
 
+## 域名配置（使用域名访问）
+
+### 1. 修改 Windows hosts 文件
+```powershell
+# 以管理员身份打开记事本
+notepad C:\Windows\System32\drivers\etc\hosts
+
+# 添加以下内容（将域名指向本地）
+127.0.0.1 lumirun.local
+127.0.0.1 www.lumirun.local
+```
+
+### 2. 配置 Nginx 反向代理
+使用项目中的 `nginx-windows.conf` 配置文件：
+
+```powershell
+# 确保前端已构建
+cd frontend
+npm run build
+
+# 启动 Nginx（假设 Nginx 安装在 D:\nginx）
+D:\nginx\nginx.exe -c D:\LumiRun\LumiRun\nginx-windows.conf
+```
+
+### 3. 前端配置
+前端已配置为使用相对路径，无需修改。
+
+### 4. 访问地址
+- **前端页面**: http://lumirun.local:8080 或 https://lumirun.local（如果配置了SSL）
+- **后端API**: 通过 Nginx 反向代理访问，路径为 `/api/`
+
+### 5. SSL 证书配置（可选）
+如果需要使用 HTTPS，需要配置 SSL 证书：
+
+1. 创建 SSL 证书目录：
+```powershell
+mkdir D:\LumiRun\LumiRun\ssl
+```
+
+2. 将 SSL 证书文件放入该目录：
+- `certificate.crt` - SSL 证书
+- `private.key` - 私钥
+
+3. 取消 Nginx 配置中的 HTTPS 配置注释
+
 ## 防火墙配置
 
 如果需要远程访问，请添加防火墙规则：
 
 ```powershell
-# 允许后端端口
-New-NetFirewallRule -DisplayName "LumiRun Backend" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+# 允许 Nginx 端口（HTTP）
+New-NetFirewallRule -DisplayName "LumiRun HTTP" -Direction Inbound -LocalPort 8080 -Protocol TCP -Action Allow
 
-# 允许前端端口（开发环境）
-New-NetFirewallRule -DisplayName "LumiRun Frontend" -Direction Inbound -LocalPort 3002 -Protocol TCP -Action Allow
+# 允许 Nginx 端口（HTTPS）
+New-NetFirewallRule -DisplayName "LumiRun HTTPS" -Direction Inbound -LocalPort 443 -Protocol TCP -Action Allow
+
+# 允许后端端口（仅内部访问）
+New-NetFirewallRule -DisplayName "LumiRun Backend" -Direction Inbound -LocalPort 8084 -Protocol TCP -Action Allow -LocalAddress 127.0.0.1
 ```
 
 ## 常见问题
@@ -307,6 +372,15 @@ New-NetFirewallRule -DisplayName "LumiRun Frontend" -Direction Inbound -LocalPor
 ### 6. 依赖安装失败
 - 确保网络连接正常
 - 尝试使用国内 PyPI 镜像：`pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
+
+### 7. Node.js 平台检查失败（Windows 7）
+- 使用 `start-frontend.bat` 启动前端（已自动设置环境变量）
+- 或手动设置环境变量：`set NODE_SKIP_PLATFORM_CHECK=1`
+
+### 8. 数据库没有初始化数据
+- 确保以管理员身份运行部署脚本
+- 检查 `.env` 文件中的数据库配置是否正确
+- 尝试单独运行 `init-database-only.bat`
 
 ## 性能优化
 
@@ -428,3 +502,14 @@ DROP USER 'lumirun'@'localhost';
 - 防火墙规则已配置
 - 日志目录可写
 - 上传目录可写
+
+---
+
+**脚本文件说明：**
+
+| 脚本文件 | 功能说明 |
+| --- | --- |
+| `deploy-windows.bat` | 完整部署脚本，包含环境检查、依赖安装、数据库初始化 |
+| `init-database-only.bat` | 仅数据库初始化脚本，跳过前端构建 |
+| `start-frontend.bat` | 前端启动脚本，自动设置 Windows 7 兼容环境变量 |
+| `start_backend.cmd` | 后端启动脚本（位于 backend 目录） |
