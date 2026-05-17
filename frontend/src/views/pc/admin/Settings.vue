@@ -125,6 +125,35 @@
       </div>
 
       <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">修改密码</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">当前密码</label>
+            <input v-model="passwordForm.old_password" type="password" class="input w-full" placeholder="请输入当前密码" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">新密码</label>
+            <input v-model="passwordForm.new_password" type="password" class="input w-full" placeholder="请输入新密码" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">确认新密码</label>
+            <input v-model="passwordForm.confirm_password" type="password" class="input w-full" placeholder="请再次输入新密码" />
+          </div>
+          <div class="md:col-span-2 text-sm text-gray-500">
+            <p>密码要求：至少6位，包含大小写字母，可以使用特殊符号</p>
+          </div>
+        </div>
+        <div v-if="passwordError" class="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded">
+          {{ passwordError }}
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button @click="changePassword" class="btn-primary" :disabled="changingPassword">
+            {{ changingPassword ? '修改中...' : '修改密码' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">SMTP邮箱配置</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -199,6 +228,15 @@ interface Settings {
   smtp_use_ssl: boolean;
 }
 
+const passwordForm = ref({
+  old_password: '',
+  new_password: '',
+  confirm_password: ''
+});
+
+const changingPassword = ref(false);
+const passwordError = ref('');
+
 const settings = ref<Settings>({
   site_name: '',
   site_description: '',
@@ -234,9 +272,13 @@ const fetchSettings = async () => {
     const allSettings: Record<string, string> = {};
     
     Object.values(data).forEach((categorySettings) => {
-      categorySettings.forEach((s: any) => {
-        allSettings[s.setting_key] = s.setting_value;
-      });
+      if (Array.isArray(categorySettings)) {
+        categorySettings.forEach((s: any) => {
+          if (s && s.setting_key) {
+            allSettings[s.setting_key] = s.setting_value;
+          }
+        });
+      }
     });
 
     settings.value = {
@@ -307,6 +349,56 @@ const saveSettings = async () => {
     alert('保存设置失败');
   } finally {
     saving.value = false;
+  }
+};
+
+const changePassword = async () => {
+  passwordError.value = '';
+  
+  if (!passwordForm.value.old_password || !passwordForm.value.new_password || !passwordForm.value.confirm_password) {
+    passwordError.value = '请填写所有字段';
+    return;
+  }
+  
+  if (passwordForm.value.new_password !== passwordForm.value.confirm_password) {
+    passwordError.value = '两次输入的新密码不一致';
+    return;
+  }
+  
+  if (passwordForm.value.new_password.length < 6) {
+    passwordError.value = '密码长度至少6位';
+    return;
+  }
+  const hasUpper = /[A-Z]/.test(passwordForm.value.new_password);
+  const hasLower = /[a-z]/.test(passwordForm.value.new_password);
+  if (!hasUpper || !hasLower) {
+    passwordError.value = '密码必须包含大写和小写字母';
+    return;
+  }
+  
+  changingPassword.value = true;
+  try {
+    await request.put('/api/v1/users/password', {
+      old_password: passwordForm.value.old_password,
+      new_password: passwordForm.value.new_password
+    });
+    alert('密码修改成功，请重新登录');
+    
+    passwordForm.value = {
+      old_password: '',
+      new_password: '',
+      confirm_password: ''
+    };
+  } catch (error: any) {
+    console.error('修改密码失败:', error);
+    const errorDetail = error.response?.data?.detail;
+    if (Array.isArray(errorDetail)) {
+      passwordError.value = errorDetail.map((e: any) => e.msg || e).join('; ');
+    } else {
+      passwordError.value = errorDetail || '修改密码失败';
+    }
+  } finally {
+    changingPassword.value = false;
   }
 };
 

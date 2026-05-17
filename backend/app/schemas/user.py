@@ -36,8 +36,8 @@ class UserCreate(BaseModel):
     
     @validator('role_id')
     def validate_role(cls, v):
-        if v not in [3, 4]:
-            raise ValueError('角色只能选择导师或学员')
+        if v <= 0:
+            raise ValueError('角色ID必须为正整数')
         return v
 
 
