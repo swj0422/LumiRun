@@ -16,7 +16,9 @@ router = APIRouter()
 
 
 class WishCreate(BaseModel):
-    content: str = Field(..., description="心愿内容（1-200字）")
+    title: str = Field(..., description="心愿标题（1-50字）")
+    description: Optional[str] = Field(None, description="心愿描述（可选）")
+    class_id: Optional[int] = Field(None, description="组织ID（可选）")
     is_anonymous: Optional[int] = Field(0, description="是否匿名：0-不匿名，1-匿名")
 
 
@@ -33,28 +35,35 @@ class WishResponse(BaseModel):
 @router.post("/", response_model=WishResponse)
 async def create_wish(
     wish_data: WishCreate,
-    image: UploadFile = File(None),
+    images: List[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """创建心愿便利贴"""
-    # 处理图片上传
+    # 处理图片上传（取第一张）
     image_url = None
-    if image:
-        filename = f"wish_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
-        upload_dir = os.path.join(get_settings().UPLOAD_DIR, "wishes")
-        os.makedirs(upload_dir, exist_ok=True)
-        filepath = os.path.join(upload_dir, filename)
+    if images and len(images) > 0:
+        image = images[0]
+        if image and image.filename:
+            filename = f"wish_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+            upload_dir = os.path.join(get_settings().UPLOAD_DIR, "wishes")
+            os.makedirs(upload_dir, exist_ok=True)
+            filepath = os.path.join(upload_dir, filename)
 
-        with open(filepath, "wb") as f:
-            f.write(await image.read())
+            with open(filepath, "wb") as f:
+                f.write(await image.read())
 
-        image_url = f"/uploads/wishes/{filename}"
-    
+            image_url = f"/uploads/wishes/{filename}"
+
+    # 使用 title 作为 content
+    content = wish_data.title
+    if wish_data.description:
+        content = f"{wish_data.title}\n{wish_data.description}"
+
     wish = await WishService.create_wish(
         db=db,
         user_id=current_user.id,
-        content=wish_data.content,
+        content=content,
         image_url=image_url,
         is_anonymous=wish_data.is_anonymous
     )
