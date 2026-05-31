@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional, List
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_admin
 from app.models.wish import Wish
 from app.models.user import User
 from app.services.wish_service import WishService
@@ -153,13 +153,37 @@ async def delete_wish(
         wish_id=wish_id,
         user_id=current_user.id
     )
-    
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="心愿不存在或无权删除"
         )
-    
+
+    return {
+        "message": "删除成功"
+    }
+
+
+@router.delete("/admin/{wish_id}")
+async def admin_delete_wish(
+    wish_id: int,
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """管理员删除心愿（可删除任意心愿）"""
+    success = await WishService.delete_wish(
+        db=db,
+        wish_id=wish_id,
+        is_admin=True
+    )
+
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="心愿不存在"
+        )
+
     return {
         "message": "删除成功"
     }

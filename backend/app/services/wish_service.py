@@ -82,19 +82,25 @@ class WishService:
     async def delete_wish(
         db: AsyncSession,
         wish_id: int,
-        user_id: int
+        user_id: int = None,
+        is_admin: bool = False
     ) -> bool:
         """软删除心愿便利贴"""
-        wish = await db.execute(
-            select(Wish).where(Wish.id == wish_id, Wish.user_id == user_id)
-        )
+        if is_admin:
+            wish = await db.execute(
+                select(Wish).where(Wish.id == wish_id)
+            )
+        else:
+            wish = await db.execute(
+                select(Wish).where(Wish.id == wish_id, Wish.user_id == user_id)
+            )
         wish = wish.scalar_one_or_none()
-        
+
         if not wish:
             return False
-        
+
         wish.is_deleted = 1
         await db.commit()
-        
-        logger.info(f"用户 {user_id} 删除心愿便利贴: {wish_id}")
+
+        logger.info(f"用户 {user_id if not is_admin else 'admin'} 删除心愿便利贴: {wish_id}")
         return True
