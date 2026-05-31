@@ -31,8 +31,8 @@
           @click="selectRole('student')"
           class="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
         >
-          <h3 class="text-lg font-semibold text-gray-900">学员身份</h3>
-          <p class="text-sm text-gray-500">进入学员首页，查看个人成长记录</p>
+          <h3 class="text-lg font-semibold text-gray-900">成员身份</h3>
+          <p class="text-sm text-gray-500">进入成员首页，查看个人成长记录</p>
         </div>
 
         <div
@@ -40,8 +40,8 @@
           @click="selectRole('class_assistant')"
           class="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
         >
-          <h3 class="text-lg font-semibold text-gray-900">班级助理身份</h3>
-          <p class="text-sm text-gray-500">进入助理工作台，管理授权班级</p>
+          <h3 class="text-lg font-semibold text-gray-900">组织助理身份</h3>
+          <p class="text-sm text-gray-500">进入助理工作台，管理授权组织</p>
         </div>
       </div>
 
@@ -84,24 +84,24 @@ const checkRoles = async () => {
     hasAssistantRole.value = isClassAssistant && assistantClasses.length > 0;
     console.log('[DEBUG] checkRoles 助理状态:', { isClassAssistant, assistantClassesLength: assistantClasses.length, hasAssistantRole: hasAssistantRole.value });
     
-    // 检查用户是否有学员角色
+    // 检查用户是否有成员角色
     // 1. 直接从用户信息判断角色
     const userInfo = getCache('userInfo');
     const isStudentRole = userInfo && userInfo.role_name === 'student';
     console.log('[DEBUG] checkRoles 用户信息:', userInfo, 'isStudentRole:', isStudentRole);
     
-    // 2. 检查是否有绑定的班级
+    // 2. 检查是否有绑定的组织
     let hasBoundClasses = false;
     try {
       const studentStatus = await request.get('/api/v1/students/my-classes');
-      console.log('[DEBUG] checkRoles 学员状态响应:', studentStatus);
+      console.log('[DEBUG] checkRoles 成员状态响应:', studentStatus);
       hasBoundClasses = (studentStatus && Array.isArray(studentStatus) && studentStatus.length > 0) || false;
       console.log('[DEBUG] checkRoles hasBoundClasses:', hasBoundClasses);
     } catch (error) {
-      console.error('检查学员状态失败:', error);
+      console.error('检查成员状态失败:', error);
     }
     
-    // 如果是student角色或者有绑定的班级，就显示学员身份选项
+    // 如果是student角色或者有绑定的组织，就显示成员身份选项
     hasStudentRole.value = isStudentRole || hasBoundClasses;
     console.log('[DEBUG] checkRoles 最终结果:', { hasStudentRole: hasStudentRole.value, hasAssistantRole: hasAssistantRole.value });
   } catch (error) {

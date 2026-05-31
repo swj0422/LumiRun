@@ -59,7 +59,7 @@
       <!-- 用户信息和操作 -->
       <div class="px-3 py-3 border-t border-gray-200">
         <div v-if="!sidebarCollapsed" class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-700 truncate flex-1">学员: {{ studentName || userStore.userInfo?.real_name }}</span>
+          <span class="text-sm text-gray-700 truncate flex-1">成员: {{ studentName || userStore.userInfo?.real_name }}</span>
           <button
             @click="toggleMessagePanel"
             class="relative p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md mr-2"
@@ -177,11 +177,11 @@
             @click="showRoleModal = true; mobileMenuOpen = false"
             class="block w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-left"
           >
-            切换班级/助理
+            切换组织/助理
           </button>
           <div class="pt-4 border-t border-gray-200">
             <div class="flex items-center justify-between">
-              <span class="text-base font-medium text-gray-700">学员: {{ studentName || userStore.userInfo?.real_name }}</span>
+              <span class="text-base font-medium text-gray-700">成员: {{ studentName || userStore.userInfo?.real_name }}</span>
               <button @click="handleLogout" class="text-base font-medium text-gray-500 hover:text-gray-700">退出</button>
             </div>
           </div>
@@ -233,11 +233,11 @@
       </div>
     </main>
 
-    <!-- 切换班级/助理模态框 -->
+    <!-- 切换组织/助理模态框 -->
     <div v-if="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">切换身份/班级</h3>
+          <h3 class="text-lg font-semibold text-gray-900">切换身份/组织</h3>
           <button @click="showRoleModal = false" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -246,7 +246,7 @@
         </div>
         <div class="space-y-4">
           <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">我的班级</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">我的组织</h4>
             <div class="space-y-2">
               <div
                 v-for="cls in bindClasses"
@@ -267,7 +267,7 @@
               @click="switchToAssistant"
               class="w-full py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
             >
-              切换到班级助理身份
+              切换到组织助理身份
             </button>
           </div>
         </div>
@@ -414,7 +414,7 @@ const getStudentName = async () => {
       studentName.value = userStore.userInfo?.real_name || '';
     }
   } catch (error) {
-    console.error('获取学员名字失败:', error);
+    console.error('获取成员名字失败:', error);
     studentName.value = userStore.userInfo?.real_name || '';
   }
 };

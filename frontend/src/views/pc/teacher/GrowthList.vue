@@ -77,7 +77,7 @@
               v-model="searchKeyword"
               type="text"
               class="input w-full"
-              placeholder="搜索学员姓名"
+              placeholder="搜索成员姓名"
               @input="handleSearch"
             />
           </div>
@@ -106,7 +106,7 @@
             class="input w-48"
             @change="fetchLogs"
           >
-            <option value="">全部班级</option>
+            <option value="">全部组织</option>
             <option
               v-for="cls in uniqueClasses"
               :key="cls.class_name"
@@ -149,12 +149,12 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                学员
+                成员
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                班级
+                组织
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -317,7 +317,7 @@
         >
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
             <h3 class="text-sm font-semibold text-gray-900 truncate">
-              {{ cls.session || '' }}级 {{ cls.class_name }}班级
+              {{ cls.session || '' }}级 {{ cls.class_name }}组织
             </h3>
           </div>
           <div class="overflow-x-auto">
@@ -332,7 +332,7 @@
                   <th
                     class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    学员
+                    成员
                   </th>
                   <th
                     class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -427,7 +427,7 @@
                     colspan="4"
                     class="px-4 py-6 text-center text-gray-500 text-sm"
                   >
-                    暂无学员数据
+                    暂无成员数据
                   </td>
                 </tr>
               </tbody>
@@ -449,7 +449,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1"
-                >选择班级</label
+                >选择组织</label
               >
               <select
                 v-model="growthForm.class_id"
@@ -457,7 +457,7 @@
                 class="input"
                 @change="handleClassChange"
               >
-                <option value="">请选择班级</option>
+                <option value="">请选择组织</option>
                 <option v-for="cls in classes" :key="cls.id" :value="cls.id">
                   {{ cls.session || '' }}级 {{ cls.class_name }}班 -
                   {{ cls.school_name || '' }}
@@ -466,13 +466,13 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1"
-                >选择学员</label
+                >选择成员</label
               >
               <div class="relative">
                 <input
                   type="text"
                   v-model="studentSearch"
-                  placeholder="输入学员姓名搜索..."
+                  placeholder="输入成员姓名搜索..."
                   class="input w-full"
                   @focus="showStudentDropdown = true"
                   @blur="handleBlur"
@@ -502,7 +502,7 @@
                   "
                   class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg p-3 text-gray-500"
                 >
-                  未找到匹配的学员
+                  未找到匹配的成员
                 </div>
                 <input type="hidden" v-model="growthForm.student_id" />
               </div>
@@ -574,10 +574,10 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
-              >选择班级</label
+              >选择组织</label
             >
             <select v-model="batchForm.class_id" required class="input">
-              <option value="">请选择班级</option>
+              <option value="">请选择组织</option>
               <option v-for="cls in classes" :key="cls.id" :value="cls.id">
                 {{ cls.session || '' }}级 {{ cls.class_name }}班 -
                 {{ cls.school_name || '' }}
@@ -637,7 +637,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1"
-                >学员</label
+                >成员</label
               >
               <div class="text-sm text-gray-900">
                 {{ editForm.student_name }}
@@ -710,7 +710,7 @@
         <h2 class="text-xl font-bold mb-4">删除成长值记录</h2>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">学员</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">成员</label>
             <div class="text-sm text-gray-900">
               {{ deleteForm.student_name }}
             </div>
@@ -760,11 +760,11 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">选择要导出的班级</h2>
+        <h2 class="text-xl font-bold mb-4">选择要导出的组织</h2>
         <div class="space-y-4">
           <select v-model="selectedExportClass" class="input w-full">
-            <option value="">选择班级</option>
-            <option value="all">全部班级</option>
+            <option value="">选择组织</option>
+            <option value="all">全部组织</option>
             <option v-for="cls in classes" :key="cls.id" :value="cls.id">
               {{ cls.session || '' }}级 {{ cls.class_name }}班
             </option>
@@ -799,13 +799,13 @@
       <!-- 搜索和筛选 -->
       <div class="bg-white rounded-lg shadow p-4 space-y-4">
         <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600">学员姓名：</span>
+          <span class="text-sm text-gray-600">成员姓名：</span>
           <input
             v-model="historyStudentName"
             type="text"
             class="input w-40"
             @input="handleHistorySearch"
-            placeholder="输入学员姓名搜索"
+            placeholder="输入成员姓名搜索"
           />
           <span class="text-sm text-gray-600 ml-4">日期范围：</span>
           <input
@@ -834,7 +834,7 @@
               <th
                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                学员
+                成员
               </th>
               <th
                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -1027,7 +1027,7 @@ const growthForm = ref({
 const studentSearch = ref('');
 const showStudentDropdown = ref(false);
 
-// 过滤学员列表（搜索）
+// 过滤成员列表（搜索）
 const filteredStudents = computed(() => {
   let result = students.value;
 
@@ -1041,7 +1041,7 @@ const filteredStudents = computed(() => {
   return result;
 });
 
-// 处理班级变更
+// 处理组织变更
 const handleClassChange = async () => {
   if (!growthForm.value.class_id) {
     students.value = [];
@@ -1051,7 +1051,7 @@ const handleClassChange = async () => {
 
   try {
     const classId = parseInt(growthForm.value.class_id as string);
-    // 获取班级学生列表
+    // 获取组织学生列表
     const data = await request.get(`/api/v1/classes/${classId}/students`);
     if (data && data.items) {
       students.value = data.items.map((item: any) => ({
@@ -1068,7 +1068,7 @@ const handleClassChange = async () => {
     growthForm.value.student_id = '';
     studentSearch.value = '';
   } catch (error) {
-    console.error('获取班级学生失败:', error);
+    console.error('获取组织学生失败:', error);
     students.value = [];
   }
 };
@@ -1164,7 +1164,7 @@ const sessions = computed(() => {
   return Array.from(sessionSet).sort().reverse();
 });
 
-// 计算班级列表（去重）
+// 计算组织列表（去重）
 const uniqueClasses = computed(() => {
   const classMap = new Map<string, ClassInfo>();
   classes.value.forEach((cls) => {
@@ -1175,7 +1175,7 @@ const uniqueClasses = computed(() => {
   return Array.from(classMap.values());
 });
 
-// 计算学员标签
+// 计算成员标签
 
 // 计算成长值标签
 const growthTags = computed(() => {
@@ -1193,7 +1193,7 @@ const fetchClasses = async () => {
       classes.value = [];
     }
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 
@@ -1327,13 +1327,13 @@ const handleEditGrowth = async () => {
       // 更新原记录
       const index = logs.value.findIndex((log) => log.id === updatedLog.id);
       if (index !== -1) {
-        // 获取班级信息
+        // 获取组织信息
         const selectedClass = classes.value.find(
           (cls) => String(cls.id) === updatedLog.class_id
         );
         const className = selectedClass ? selectedClass.class_name : '';
 
-        // 获取学员信息
+        // 获取成员信息
         const selectedStudent = students.value.find(
           (s) => s.id === updatedLog.class_student_id
         );
@@ -1487,7 +1487,7 @@ const fetchStudents = async () => {
         });
     }
   } catch (error) {
-    console.error('获取学员列表失败:', error);
+    console.error('获取成员列表失败:', error);
   }
 };
 
@@ -1520,23 +1520,23 @@ const fetchTags = async () => {
 const handleAddGrowth = async () => {
   try {
     if (!growthForm.value.class_id) {
-      alert('请选择班级');
+      alert('请选择组织');
       return;
     }
     if (!growthForm.value.student_id) {
-      alert('请选择学员');
+      alert('请选择成员');
       return;
     }
 
     // 保存当前表单数据，用于后续添加到列表
     const { student_id, score, reason } = growthForm.value;
 
-    // 获取选中的学员信息
+    // 获取选中的成员信息
     const selectedStudent = students.value.find(
       (s) => String(s.id) === student_id
     );
     if (!selectedStudent) {
-      alert('学员信息获取失败，请重新选择');
+      alert('成员信息获取失败，请重新选择');
       return;
     }
 
@@ -1557,7 +1557,7 @@ const handleAddGrowth = async () => {
     studentSearch.value = '';
     showSingleAddModal.value = false;
 
-    // 获取班级信息
+    // 获取组织信息
     const selectedClass = classes.value.find(
       (cls) => String(cls.id) === growthForm.value.class_id
     );
@@ -1585,7 +1585,7 @@ const handleAddGrowth = async () => {
     // 刷新排行榜数据，因为成长值可能改变了
     fetchClassLeaderboard();
 
-    // 刷新学员数据，因为成长值可能改变了
+    // 刷新成员数据，因为成长值可能改变了
     fetchStudents();
 
     alert('添加成功');
@@ -1597,11 +1597,11 @@ const handleAddGrowth = async () => {
 
 const downloadBatchTemplate = async () => {
   if (!batchForm.value.class_id) {
-    alert('请先选择班级');
+    alert('请先选择组织');
     return;
   }
 
-  // 确保班级数据已加载
+  // 确保组织数据已加载
   if (classes.value.length === 0) {
     await fetchClasses();
   }
@@ -1611,13 +1611,13 @@ const downloadBatchTemplate = async () => {
     await fetchTags();
   }
 
-  // 获取所选班级的所有学员（不限制数量）
+  // 获取所选组织的所有成员（不限制数量）
   let allStudents: any[] = [];
   try {
     const data = await request.get('/api/v1/students/teacher-students', {
       params: {
         class_id: batchForm.value.class_id,
-        limit: 9999  // 使用大的limit获取所有学员
+        limit: 9999  // 使用大的limit获取所有成员
       }
     });
     if (Array.isArray(data)) {
@@ -1640,16 +1640,16 @@ const downloadBatchTemplate = async () => {
       }));
     }
   } catch (error) {
-    console.error('获取学员列表失败:', error);
-    alert('获取学员列表失败，请重试');
+    console.error('获取成员列表失败:', error);
+    alert('获取成员列表失败，请重试');
     return;
   }
 
-  console.log('班级列表:', classes.value);
-  console.log('选择的班级ID:', batchForm.value.class_id);
-  console.log('获取到的学员数量:', allStudents.length);
+  console.log('组织列表:', classes.value);
+  console.log('选择的组织ID:', batchForm.value.class_id);
+  console.log('获取到的成员数量:', allStudents.length);
 
-  // 尝试多种方式查找班级
+  // 尝试多种方式查找组织
   let selectedClassInfo = classes.value.find(
     (cls) => String(cls.id) === batchForm.value.class_id
   );
@@ -1660,10 +1660,10 @@ const downloadBatchTemplate = async () => {
     selectedClassInfo = classes.value.find((cls) => cls.id === classIdNum);
   }
 
-  console.log('找到的班级信息:', selectedClassInfo);
+  console.log('找到的组织信息:', selectedClassInfo);
 
   if (!selectedClassInfo) {
-    alert('班级信息获取失败，请重新选择');
+    alert('组织信息获取失败，请重新选择');
     return;
   }
 
@@ -1673,15 +1673,15 @@ const downloadBatchTemplate = async () => {
   const sheetData = [
     [classDisplayText],
     ['黄色背景行不可删除或变更，否则无法导入'],
-    ['学员学号', '姓名', '成长原因', '成长值'],
+    ['成员学号', '姓名', '成长原因', '成长值'],
   ];
 
-  // 过滤出该班级的学员
-  console.log('所有学员:', allStudents);
-  console.log('选择的班级信息:', selectedClassInfo);
+  // 过滤出该组织的成员
+  console.log('所有成员:', allStudents);
+  console.log('选择的组织信息:', selectedClassInfo);
 
   const classStudents = allStudents.filter((student: any) => {
-    // 根据学校、届和班级名称进行精确匹配
+    // 根据学校、届和组织名称进行精确匹配
     return (
       selectedClassInfo &&
       student.class_name === selectedClassInfo.class_name &&
@@ -1690,7 +1690,7 @@ const downloadBatchTemplate = async () => {
     );
   });
 
-  console.log('过滤后的学员:', classStudents);
+  console.log('过滤后的成员:', classStudents);
 
   // 按学号大小升序排序
   classStudents.sort((a, b) => {
@@ -1704,9 +1704,9 @@ const downloadBatchTemplate = async () => {
     return getStudentNo(a) - getStudentNo(b);
   });
   
-  console.log('排序后的学员:', classStudents);
+  console.log('排序后的成员:', classStudents);
 
-  // 添加学员信息到模板
+  // 添加成员信息到模板
   classStudents.forEach((student) => {
     sheetData.push([
       student.student_no_in_class || '',
@@ -1842,7 +1842,7 @@ const handleBatchFileUpload = (event: Event) => {
 
 const handleBatchImport = debounce(async () => {
   if (!batchForm.value.class_id) {
-    alert('请先选择班级');
+    alert('请先选择组织');
     return;
   }
   if (!batchFile.value) {
@@ -1850,7 +1850,7 @@ const handleBatchImport = debounce(async () => {
     return;
   }
 
-  // 尝试多种方式查找班级
+  // 尝试多种方式查找组织
   let selectedClassInfo = classes.value.find(
     (cls) => String(cls.id) === batchForm.value.class_id
   );
@@ -1862,7 +1862,7 @@ const handleBatchImport = debounce(async () => {
   }
 
   if (!selectedClassInfo) {
-    alert('班级信息获取失败，请重新选择');
+    alert('组织信息获取失败，请重新选择');
     return;
   }
 
@@ -1878,12 +1878,12 @@ const handleBatchImport = debounce(async () => {
         header: 1,
       }) as any[][];
 
-      // 跳过前三行（班级信息、说明、表头）
+      // 跳过前三行（组织信息、说明、表头）
       const records = jsonData.slice(3);
 
       if (records.length === 0) {
         alert(
-          '未解析到有效的成长值记录，请确保学员学号、姓名和标签名称都已填写'
+          '未解析到有效的成长值记录，请确保成员学号、姓名和标签名称都已填写'
         );
         return;
       }
@@ -1892,7 +1892,7 @@ const handleBatchImport = debounce(async () => {
       const importData = [];
       const invalidRecords = [];
 
-      // 获取当前选择的班级信息
+      // 获取当前选择的组织信息
       let selectedClassInfo = classes.value.find(
         (cls) => String(cls.id) === batchForm.value.class_id
       );
@@ -1913,7 +1913,7 @@ const handleBatchImport = debounce(async () => {
           continue;
         }
 
-        // 验证学员是否属于当前选择的班级
+        // 验证成员是否属于当前选择的组织
         const isStudentInClass = students.value.some((student) => {
           return (
             selectedClassInfo &&
@@ -1926,7 +1926,7 @@ const handleBatchImport = debounce(async () => {
 
         if (!isStudentInClass) {
           invalidRecords.push(
-            `第${i + 4}行：学员 ${studentName}（学号：${studentNo}）不属于当前选择的班级`
+            `第${i + 4}行：成员 ${studentName}（学号：${studentNo}）不属于当前选择的组织`
           );
           continue;
         }
@@ -2007,7 +2007,7 @@ const handleBatchImport = debounce(async () => {
 
       if (importData.length === 0) {
         alert(
-          '未解析到有效的成长值记录，请确保学员学号、姓名和成长原因都已填写，且成长值为整数'
+          '未解析到有效的成长值记录，请确保成员学号、姓名和成长原因都已填写，且成长值为整数'
         );
         return;
       }
@@ -2044,20 +2044,20 @@ onMounted(async () => {
   await fetchStudents();
   await fetchTags();
 
-  // 处理路由参数，如果有学员姓名则筛选
+  // 处理路由参数，如果有成员姓名则筛选
   const studentName = route.query.student_name as string;
   if (studentName) {
     searchKeyword.value = studentName;
-    // 检查学员是否存在且状态正常
+    // 检查成员是否存在且状态正常
     const studentExists = students.value.some(
       (student) => student.real_name === studentName
     );
     if (studentExists) {
-      // 自动选择学员
+      // 自动选择成员
       growthForm.value.student_name = studentName;
     } else {
-      // 学员不存在或状态异常，显示错误提示
-      alert('该学员状态异常，无法添加成长值');
+      // 成员不存在或状态异常，显示错误提示
+      alert('该成员状态异常，无法添加成长值');
     }
   }
 
@@ -2104,25 +2104,25 @@ watch(
 // 排行榜相关函数
 const fetchClassLeaderboard = async () => {
   try {
-    console.log('开始获取班级排行榜数据');
-    console.log('班级列表:', classes.value);
+    console.log('开始获取组织排行榜数据');
+    console.log('组织列表:', classes.value);
     
     if (classes.value.length === 0) {
-      console.log('班级列表为空，先获取班级列表');
+      console.log('组织列表为空，先获取组织列表');
       await fetchClasses();
-      console.log('获取班级列表后:', classes.value);
+      console.log('获取组织列表后:', classes.value);
     }
     
     for (const cls of classes.value) {
       const classId = Number(cls.id);
-      console.log(`获取班级 ${classId} ${cls.class_name} 的排行榜数据`);
+      console.log(`获取组织 ${classId} ${cls.class_name} 的排行榜数据`);
       // 添加时间戳参数，防止浏览器缓存
       const timestamp = new Date().getTime();
       try {
         const response = await request.get(
           `/api/v1/leaderboard/class/${classId}?t=${timestamp}`
         );
-        console.log(`班级 ${classId} 排行榜响应:`, response);
+        console.log(`组织 ${classId} 排行榜响应:`, response);
         
         // 处理不同的响应格式
         if (Array.isArray(response)) {
@@ -2132,16 +2132,16 @@ const fetchClassLeaderboard = async () => {
         } else {
           classLeaderboards.value[classId] = [];
         }
-        console.log(`班级 ${classId} 排行榜数据:`, classLeaderboards.value[classId]);
+        console.log(`组织 ${classId} 排行榜数据:`, classLeaderboards.value[classId]);
       } catch (error) {
-        console.error(`获取班级 ${classId} 排行榜失败:`, error);
+        console.error(`获取组织 ${classId} 排行榜失败:`, error);
         classLeaderboards.value[classId] = [];
       }
     }
     
-    console.log('所有班级排行榜数据:', classLeaderboards.value);
+    console.log('所有组织排行榜数据:', classLeaderboards.value);
   } catch (error) {
-    console.error('获取班级排行榜失败:', error);
+    console.error('获取组织排行榜失败:', error);
   }
 };
 
@@ -2151,7 +2151,7 @@ const getClassLeaderboard = (classId: number) => {
 
 const exportClassLeaderboard = async (classId: number, className: string) => {
   try {
-    console.log('开始导出班级:', className, 'ID:', classId);
+    console.log('开始导出组织:', className, 'ID:', classId);
 
     let element = document.querySelector(
       `[data-class-id="${classId}"]`
@@ -2181,7 +2181,7 @@ const exportClassLeaderboard = async (classId: number, className: string) => {
     container.style.zIndex = '9999';
 
     const title = document.createElement('h2');
-    title.textContent = `${className}班级成长值排行榜`;
+    title.textContent = `${className}组织成长值排行榜`;
     title.style.fontSize = '24px';
     title.style.fontWeight = 'bold';
     title.style.textAlign = 'center';
@@ -2202,7 +2202,7 @@ const exportClassLeaderboard = async (classId: number, className: string) => {
       });
 
       const link = document.createElement('a');
-      link.download = `${className}班级排行榜.png`;
+      link.download = `${className}组织排行榜.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
 
@@ -2218,7 +2218,7 @@ const exportClassLeaderboard = async (classId: number, className: string) => {
 
 const handleExport = async () => {
   if (!selectedExportClass.value) {
-    alert('请选择要导出的班级');
+    alert('请选择要导出的组织');
     return;
   }
 
@@ -2264,7 +2264,7 @@ const fetchGrowthHistory = async () => {
     }
     if (historyStudentName.value) {
       params.append('student_name', historyStudentName.value);
-      console.log('学员姓名:', historyStudentName.value);
+      console.log('成员姓名:', historyStudentName.value);
     }
     params.append('skip', historySkip.value.toString());
     params.append('limit', historyLimit.value.toString());

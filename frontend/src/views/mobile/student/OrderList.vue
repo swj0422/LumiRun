@@ -128,7 +128,7 @@
           <div v-if="selectedOrder.status === 1 && selectedOrder.qr_code" class="mt-4 p-4 bg-yellow-50 rounded-lg">
             <p class="text-sm font-medium text-gray-800 mb-2">核销码</p>
             <p class="text-lg font-bold text-yellow-800 break-all">{{ selectedOrder.qr_code }}</p>
-            <p class="text-xs text-gray-500 mt-2">请向导师出示此码进行核销</p>
+            <p class="text-xs text-gray-500 mt-2">请向管理者出示此码进行核销</p>
             
             <!-- 二维码显示 -->
             <div v-if="selectedOrder.qr_code_image" class="mt-4 flex justify-center">

@@ -114,7 +114,7 @@
             </div>
           </div>
           <p class="text-sm text-gray-600 text-center">
-            逐光成长系统是一款专为导师和学员设计的轻量化成长管理工具，帮助记录和管理学员的成长历程。
+            逐光成长系统是一款专为管理者和成员设计的轻量化成长管理工具，帮助记录和管理成员的成长历程。
           </p>
           <button @click="showAbout = false" class="w-full mt-4 px-4 py-2 bg-primary-600 text-white text-sm rounded-md hover:bg-primary-700">
             确定

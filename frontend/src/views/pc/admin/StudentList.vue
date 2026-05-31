@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">学员管理</h1>
+      <h1 class="text-2xl font-bold text-gray-900">成员管理</h1>
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">
@@ -10,11 +10,11 @@
           v-model="searchKeyword"
           type="text"
           class="input flex-1 min-w-[200px]"
-          placeholder="搜索学员姓名"
+          placeholder="搜索成员姓名"
           @input="handleSearch"
         />
         <select v-model="selectedClass" class="input w-48" @change="fetchStudents">
-          <option value="">全部班级</option>
+          <option value="">全部组织</option>
           <option v-for="cls in classes" :key="cls.id" :value="cls.id">{{ cls.class_name }}</option>
         </select>
         <select v-model="selectedBindStatus" class="input w-32" @change="fetchStudents">
@@ -37,7 +37,7 @@
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">姓名</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">昵称</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">班级</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">组织</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">绑定状态</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
@@ -78,24 +78,24 @@
       </table>
 
       <div v-if="students.length === 0" class="text-center py-12">
-        <p class="text-gray-500">暂无学员数据</p>
+        <p class="text-gray-500">暂无成员数据</p>
       </div>
     </div>
 
     <div v-if="showDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">学员详情</h2>
+        <h2 class="text-xl font-bold mb-4">成员详情</h2>
         <div class="space-y-3">
           <div class="flex justify-between">
             <span class="text-gray-500">姓名:</span>
             <span class="font-medium">{{ selectedStudent?.name || '-' }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-500">班级昵称:</span>
+            <span class="text-gray-500">组织昵称:</span>
             <span class="font-medium">{{ selectedStudent?.name_in_class }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-500">班级:</span>
+            <span class="text-gray-500">组织:</span>
             <span class="font-medium">{{ selectedStudent?.class_name }}</span>
           </div>
           <div class="flex justify-between">
@@ -252,7 +252,7 @@ const fetchStudents = async () => {
     const data = (await request.get('/api/v1/admin/students', { params })) as { items: Student[] };
     students.value = data.items || [];
   } catch (error) {
-    console.error('获取学员列表失败:', error);
+    console.error('获取成员列表失败:', error);
   }
 };
 
@@ -261,7 +261,7 @@ const fetchClasses = async () => {
     const data = (await request.get('/api/v1/admin/classes')) as { items: ClassInfo[] };
     classes.value = data.items || [];
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 
@@ -297,22 +297,22 @@ const viewLogs = async (student: Student) => {
 };
 
 const unbindStudent = async (student: Student) => {
-  if (!confirm(`确定要解绑学员"${student.name_in_class}"吗？`)) return;
+  if (!confirm(`确定要解绑成员"${student.name_in_class}"吗？`)) return;
   try {
     await request.post(`/api/v1/admin/students/${student.id}/unbind`);
     fetchStudents();
   } catch (error) {
-    console.error('解绑学员失败:', error);
+    console.error('解绑成员失败:', error);
   }
 };
 
 const deleteStudent = async (student: Student) => {
-  if (!confirm(`确定要删除学员"${student.name_in_class}"吗？此操作不可恢复。`)) return;
+  if (!confirm(`确定要删除成员"${student.name_in_class}"吗？此操作不可恢复。`)) return;
   try {
     await request.delete(`/api/v1/admin/students/${student.id}`);
     fetchStudents();
   } catch (error) {
-    console.error('删除学员失败:', error);
+    console.error('删除成员失败:', error);
   }
 };
 

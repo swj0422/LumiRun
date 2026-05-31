@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- 绑定班级信息 -->
+    <!-- 绑定组织信息 -->
     <div v-if="hasBindClass && bindClassInfo" class="px-4 py-3 bg-primary-50 border-b border-primary-100">
       <div>
-        <p class="text-xs text-primary-600">已绑定班级</p>
+        <p class="text-xs text-primary-600">已绑定组织</p>
         <div class="flex items-center">
           <p class="text-sm font-medium text-primary-800">
             {{ bindClassInfo.school_name }} {{ bindClassInfo.session }}级 {{ bindClassInfo.class_name }}班
@@ -85,7 +85,7 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">班级排行榜</p>
+              <p class="text-sm font-medium text-gray-500">组织排行榜</p>
             </div>
           </div>
         </router-link>
@@ -174,9 +174,9 @@
       </div>
     </div>
 
-    <!-- 绑定的班级列表 -->
+    <!-- 绑定的组织列表 -->
     <div v-if="hasBindClass && bindClasses.length > 1" class="px-4 mt-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">我的班级</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">我的组织</h2>
       <div class="space-y-3">
         <div
           v-for="cls in bindClasses"
@@ -215,7 +215,7 @@
       </div>
     </div>
 
-    <!-- 绑定班级提示 -->
+    <!-- 绑定组织提示 -->
     <div v-if="!hasBindClass" class="px-4 mt-6">
       <div class="card p-4 bg-warning-50 border-warning-200">
         <div class="flex items-center">
@@ -237,9 +237,9 @@
             </svg>
           </div>
           <div class="ml-3 flex-1">
-            <p class="text-sm font-medium text-warning-800">尚未绑定班级</p>
+            <p class="text-sm font-medium text-warning-800">尚未绑定组织</p>
             <p class="text-xs text-warning-600 mt-1">
-              请扫描导师提供的二维码绑定班级
+              请扫描管理者提供的二维码绑定组织
             </p>
           </div>
           <div class="flex space-x-2">
@@ -262,7 +262,7 @@
       <div class="relative w-full max-w-md">
         <div class="bg-white rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">扫描班级码</h3>
+            <h3 class="text-lg font-semibold text-gray-900">扫描组织码</h3>
             <button
               @click="closeScanner"
               class="text-gray-500 hover:text-gray-700"
@@ -287,11 +287,11 @@
             class="w-full aspect-square bg-gray-100 rounded-lg mb-4"
           ></div>
           <p class="text-sm text-gray-600 text-center">
-            请将班级二维码置于扫描框内
+            请将组织二维码置于扫描框内
           </p>
           <div class="mt-4 flex justify-center">
             <button @click="handleManualBindClick" class="text-sm text-primary-600">
-              手动输入班级ID
+              手动输入组织ID
             </button>
           </div>
         </div>
@@ -306,7 +306,7 @@
       <div class="relative w-full max-w-md">
         <div class="bg-white rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">手动绑定班级</h3>
+            <h3 class="text-lg font-semibold text-gray-900">手动绑定组织</h3>
             <button
               @click="closeManualBind"
               class="text-gray-500 hover:text-gray-700"
@@ -328,12 +328,12 @@
           </div>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">班级二维码内容</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">组织二维码内容</label>
               <div class="flex items-center space-x-2">
                 <input
                   v-model="manualClassId"
                   type="text"
-                  placeholder="请输入班级二维码内容（class:xxx格式）"
+                  placeholder="请输入组织二维码内容（class:xxx格式）"
                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <button
@@ -349,7 +349,7 @@
               <p class="text-xs text-gray-500 mt-1">二维码内容通常以"class:"开头</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">班级内姓名</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">组织内姓名</label>
               <input
                 v-model="manualNameInClass"
                 type="text"
@@ -358,7 +358,7 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">班级内学号</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">组织内学号</label>
               <input
                 v-model="manualStudentNoInClass"
                 type="text"
@@ -370,7 +370,7 @@
               @click="submitManualBind"
               class="w-full btn-primary py-2"
             >
-              绑定班级
+              绑定组织
             </button>
           </div>
         </div>
@@ -401,8 +401,8 @@ const growthScore = ref({
   available_score: 0,
 });
 
-const bindClassInfo = ref<any>(null); // 绑定班级信息
-const bindClasses = ref<any[]>([]); // 所有绑定的班级
+const bindClassInfo = ref<any>(null); // 绑定组织信息
+const bindClasses = ref<any[]>([]); // 所有绑定的组织
 
 const quickLinks = [
   {
@@ -448,20 +448,20 @@ const fetchGrowthScore = async () => {
   }
 };
 
-// 检查是否绑定班级
+// 检查是否绑定组织
 const checkBindClass = async () => {
   try {
     const response = await request.get('/api/v1/students/my-classes');
-    console.log('绑定班级信息:', response);
+    console.log('绑定组织信息:', response);
     if (response && response.length > 0) {
       hasBindClass.value = true;
-      // 保存所有绑定的班级信息
+      // 保存所有绑定的组织信息
       bindClasses.value = response;
-      // 保存第一个绑定班级信息（用于显示在顶部）
+      // 保存第一个绑定组织信息（用于显示在顶部）
       bindClassInfo.value = response[0];
-      // 保存班级ID到localStorage，用于WebSocket连接
+      // 保存组织ID到localStorage，用于WebSocket连接
       localStorage.setItem('selectedClassId', response[0].id.toString());
-      console.log('[DEBUG] 保存班级ID到localStorage:', response[0].id);
+      console.log('[DEBUG] 保存组织ID到localStorage:', response[0].id);
     } else {
       hasBindClass.value = false;
       bindClasses.value = [];
@@ -469,7 +469,7 @@ const checkBindClass = async () => {
       localStorage.removeItem('selectedClassId');
     }
   } catch (error) {
-    console.error('检查绑定班级失败:', error);
+    console.error('检查绑定组织失败:', error);
     hasBindClass.value = false;
     bindClasses.value = [];
     bindClassInfo.value = null;
@@ -628,15 +628,15 @@ const closeManualBind = () => {
 // 提交手动绑定
 const submitManualBind = async () => {
   if (!manualClassId.value) {
-    alert('请输入班级二维码内容');
+    alert('请输入组织二维码内容');
     return;
   }
   if (!manualNameInClass.value) {
-    alert('请输入班级内姓名');
+    alert('请输入组织内姓名');
     return;
   }
   if (!manualStudentNoInClass.value) {
-    alert('请输入班级内学号');
+    alert('请输入组织内学号');
     return;
   }
 
@@ -651,7 +651,7 @@ const submitManualBind = async () => {
   }
 
   if (!qrCode) {
-    alert('无效的班级二维码内容');
+    alert('无效的组织二维码内容');
     return;
   }
 
@@ -660,8 +660,8 @@ const submitManualBind = async () => {
     try {
       await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('验证班级信息失败:', error);
-      alert('无效的班级二维码内容或班级不存在');
+      console.error('验证组织信息失败:', error);
+      alert('无效的组织二维码内容或组织不存在');
       return;
     }
 
@@ -682,8 +682,8 @@ const submitManualBind = async () => {
         await fetchGrowthScore();
       }
       closeManualBind();
-    } else if (response.message === '绑定申请已提交，请等待导师审批') {
-      alert('绑定申请已提交，请等待导师审批');
+    } else if (response.message === '绑定申请已提交，请等待管理者审批') {
+      alert('绑定申请已提交，请等待管理者审批');
       closeManualBind();
     } else {
       alert('绑定失败：' + (response.message || '未知错误'));
@@ -694,21 +694,21 @@ const submitManualBind = async () => {
   }
 };
 
-// 切换班级
+// 切换组织
 const switchClass = async (classId: number, studentId: number) => {
   try {
     await request.post(`/api/v1/class-student/${studentId}/switch-class`, {
       new_class_id: classId
     });
-    alert('切换班级成功！');
+    alert('切换组织成功！');
     // 重新检查绑定状态
     await checkBindClass();
     if (hasBindClass.value) {
       await fetchGrowthScore();
     }
   } catch (error) {
-    console.error('切换班级失败:', error);
-    alert('切换班级失败，请稍后重试');
+    console.error('切换组织失败:', error);
+    alert('切换组织失败，请稍后重试');
   }
 };
 
@@ -736,17 +736,17 @@ const handleScanResult = async (result: string) => {
     }
 
     if (!qrCode) {
-      alert('无效的班级二维码');
+      alert('无效的组织二维码');
       return;
     }
 
-    // 通过 qr_code 获取班级信息
+    // 通过 qr_code 获取组织信息
     let classInfo;
     try {
       classInfo = await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('获取班级信息失败:', error);
-      alert('无效的班级二维码或班级不存在');
+      console.error('获取组织信息失败:', error);
+      alert('无效的组织二维码或组织不存在');
       // 如果来自手动绑定弹窗，提示后重新打开手动绑定弹窗
       if (scannerFromManualBind.value) {
         scannerFromManualBind.value = false;
@@ -756,7 +756,7 @@ const handleScanResult = async (result: string) => {
     }
 
     if (!classInfo || !classInfo.id) {
-      alert('无效的班级二维码或班级不存在');
+      alert('无效的组织二维码或组织不存在');
       // 如果来自手动绑定弹窗，提示后重新打开手动绑定弹窗
       if (scannerFromManualBind.value) {
         scannerFromManualBind.value = false;
@@ -765,7 +765,7 @@ const handleScanResult = async (result: string) => {
       return;
     }
 
-    // 如果来自手动绑定弹窗，填充班级二维码内容并重新打开手动绑定弹窗
+    // 如果来自手动绑定弹窗，填充组织二维码内容并重新打开手动绑定弹窗
     if (scannerFromManualBind.value) {
       scannerFromManualBind.value = false;
       manualClassId.value = result; // 使用原始扫码结果（包括 class: 前缀）
@@ -773,14 +773,14 @@ const handleScanResult = async (result: string) => {
       return;
     }
 
-    // 获取班级内姓名和学号
-    const nameInClass = prompt('请输入班级内姓名（老师给的名字）：');
+    // 获取组织内姓名和学号
+    const nameInClass = prompt('请输入组织内姓名（老师给的名字）：');
     if (!nameInClass) {
       alert('姓名不能为空');
       return;
     }
 
-    const studentNoInClass = prompt('请输入班级内学号（老师给的学号）：');
+    const studentNoInClass = prompt('请输入组织内学号（老师给的学号）：');
     if (!studentNoInClass) {
       alert('学号不能为空');
       return;
@@ -802,8 +802,8 @@ const handleScanResult = async (result: string) => {
       if (hasBindClass.value) {
         await fetchGrowthScore();
       }
-    } else if (response.message === '绑定申请已提交，请等待导师审批') {
-      alert('绑定申请已提交，请等待导师审批');
+    } else if (response.message === '绑定申请已提交，请等待管理者审批') {
+      alert('绑定申请已提交，请等待管理者审批');
     } else {
       alert('绑定失败：' + (response.message || '未知错误'));
     }

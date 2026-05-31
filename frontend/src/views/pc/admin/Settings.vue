@@ -114,7 +114,7 @@
           <div class="flex items-center justify-between py-2">
             <div>
               <p class="text-sm font-medium text-gray-900">礼品兑换功能</p>
-              <p class="text-xs text-gray-500">开启后学员可以兑换礼品</p>
+              <p class="text-xs text-gray-500">开启后成员可以兑换礼品</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input v-model="settings.feature_gift_exchange" type="checkbox" class="sr-only peer" />
@@ -129,15 +129,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">当前密码</label>
-            <input v-model="passwordForm.old_password" type="password" class="input w-full" placeholder="请输入当前密码" />
+            <input v-model="passwordForm.old_password" type="password" class="input w-full" placeholder="请输入当前密码" autocomplete="off" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">新密码</label>
-            <input v-model="passwordForm.new_password" type="password" class="input w-full" placeholder="请输入新密码" />
+            <input v-model="passwordForm.new_password" type="password" class="input w-full" placeholder="请输入新密码" autocomplete="new-password" />
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">确认新密码</label>
-            <input v-model="passwordForm.confirm_password" type="password" class="input w-full" placeholder="请再次输入新密码" />
+            <input v-model="passwordForm.confirm_password" type="password" class="input w-full" placeholder="请再次输入新密码" autocomplete="new-password" />
           </div>
           <div class="md:col-span-2 text-sm text-gray-500">
             <p>密码要求：至少6位，包含大小写字母，可以使用特殊符号</p>

@@ -47,8 +47,8 @@
           >
             <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="item.name === '首页'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              <path v-else-if="item.name === '班级管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              <path v-else-if="item.name === '学员管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <path v-else-if="item.name === '组织管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <path v-else-if="item.name === '成员管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               <path v-else-if="item.name === '成长管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               <path v-else-if="item.name === '奖励管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               <path v-else-if="item.name === '兑换管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -368,8 +368,8 @@ const navItems = computed(() => {
   if (userRole === 'class_assistant') {
     return [
       { name: '首页', path: '/teacher' },
-      { name: '班级管理', path: '/teacher/classes' },
-      { name: '学员管理', path: '/teacher/students' },
+      { name: '组织管理', path: '/teacher/classes' },
+      { name: '成员管理', path: '/teacher/students' },
       { name: '成长管理', path: '/teacher/growth' },
       { name: '意见征集', path: '/teacher/suggestion-forum' },
       { name: '心愿便利贴', path: '/teacher/wish-wall' },
@@ -377,8 +377,8 @@ const navItems = computed(() => {
   } else {
     return [
       { name: '首页', path: '/teacher' },
-      { name: '班级管理', path: '/teacher/classes' },
-      { name: '学员管理', path: '/teacher/students' },
+      { name: '组织管理', path: '/teacher/classes' },
+      { name: '成员管理', path: '/teacher/students' },
       { name: '成长管理', path: '/teacher/growth' },
       { name: '奖励管理', path: '/teacher/rewards' },
       { name: '兑换管理', path: '/teacher/orders' },

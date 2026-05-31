@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">班级管理</h1>
+      <h1 class="text-2xl font-bold text-gray-900">组织管理</h1>
       <button v-if="!isClassAssistant" @click="showCreateModal = true" class="btn-primary">
-        创建班级
+        创建组织
       </button>
     </div>
 
-    <!-- 班级列表 -->
+    <!-- 组织列表 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="classItem in classes"
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="flex justify-between items-center text-sm text-gray-500">
-          <span>学员数: {{ classItem.student_count || 0 }}</span>
+          <span>成员数: {{ classItem.student_count || 0 }}</span>
           <div class="space-x-2">
             <button
               v-if="!isClassAssistant"
@@ -70,7 +70,7 @@
               @click="manageStudents(classItem)"
               class="text-primary-600 hover:text-primary-700"
             >
-              学员
+              成员
             </button>
           </div>
         </div>
@@ -92,18 +92,18 @@
           d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
         />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">暂无班级</h3>
-      <p class="mt-1 text-sm text-gray-500">点击上方按钮创建您的第一个班级</p>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">暂无组织</h3>
+      <p class="mt-1 text-sm text-gray-500">点击上方按钮创建您的第一个组织</p>
     </div>
 
-    <!-- 创建/编辑班级弹窗 -->
+    <!-- 创建/编辑组织弹窗 -->
     <div
       v-if="showCreateModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 class="text-xl font-bold mb-4">
-          {{ editingClass ? '编辑班级' : '创建班级' }}
+          {{ editingClass ? '编辑组织' : '创建组织' }}
         </h2>
         <form @submit.prevent="handleSubmit">
           <div class="space-y-4">
@@ -145,13 +145,13 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                班级描述
+                组织描述
               </label>
               <textarea
                 v-model="form.description"
                 class="input"
                 rows="3"
-                placeholder="请输入班级描述（选填）"
+                placeholder="请输入组织描述（选填）"
               ></textarea>
             </div>
           </div>
@@ -207,18 +207,18 @@ const isClassAssistant = computed(() => {
 const fetchClasses = async () => {
   try {
     if (isClassAssistant.value) {
-      // 班级助理获取自己授权的班级列表
+      // 组织助理获取自己授权的组织列表
       const data = (await getUserAssistantClasses()) as { items: ClassInfo[] };
       classes.value = data.items || [];
     } else {
-      // 导师获取自己的班级列表
+      // 管理者获取自己的组织列表
       const data = (await request.get('/api/v1/classes/')) as { items: ClassInfo[] };
       classes.value = data.items || [];
     }
   } catch (error) {
     // 获取失败时显示空列表，不跳转页面
     classes.value = [];
-    console.log('获取班级列表失败，显示空列表');
+    console.log('获取组织列表失败，显示空列表');
   }
 };
 
@@ -232,7 +232,7 @@ const handleSubmit = async () => {
     closeModal();
     fetchClasses();
   } catch (error) {
-    console.error('保存班级失败:', error);
+    console.error('保存组织失败:', error);
   }
 };
 
@@ -265,24 +265,24 @@ const toggleStatus = async (classItem: ClassInfo) => {
     });
     classItem.status = !classItem.status;
   } catch (error) {
-    console.error('更新班级状态失败:', error);
-    alert('更新班级状态失败，请重试');
+    console.error('更新组织状态失败:', error);
+    alert('更新组织状态失败，请重试');
   }
 };
 
 const deleteClass = async (classItem: ClassInfo) => {
   if (classItem.student_count && classItem.student_count > 0) {
-    alert('该班级有学员绑定，无法删除');
+    alert('该组织有成员绑定，无法删除');
     return;
   }
 
-  if (confirm('确定要删除这个班级吗？删除后将无法恢复。')) {
+  if (confirm('确定要删除这个组织吗？删除后将无法恢复。')) {
     try {
       await request.delete(`/api/v1/classes/${classItem.id}`);
       await fetchClasses();
     } catch (error) {
-      console.error('删除班级失败:', error);
-      alert('删除班级失败，请重试');
+      console.error('删除组织失败:', error);
+      alert('删除组织失败，请重试');
     }
   }
 };

@@ -10,7 +10,7 @@ export const getOrders = (params?: {
   return request.get('/v1/orders/', { params });
 };
 
-// 获取导师的订单列表（兼容旧路径）
+// 获取管理者的订单列表（兼容旧路径）
 export const getTeacherOrders = (params?: {
   class_id?: number;
   status?: number;
@@ -20,7 +20,7 @@ export const getTeacherOrders = (params?: {
   return request.get('/v1/orders/teacher', { params });
 };
 
-// 获取学员的订单列表
+// 获取成员的订单列表
 export const getUserOrders = (params?: {
   status?: number;
   skip?: number;
@@ -44,7 +44,7 @@ export const createOrder = (data: { gift_id: number; class_id: number }) => {
   return request.post('/v1/orders/', data);
 };
 
-// 导师为学生兑换奖励
+// 管理者为学生兑换奖励
 export const createTeacherOrder = (data: {
   gift_id: number;
   class_id: number;

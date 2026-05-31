@@ -79,7 +79,7 @@
                 @click="manageClasses(gift)"
                 class="text-primary-600 hover:text-primary-700"
               >
-                班级设置
+                组织设置
               </button>
             </div>
           </div>
@@ -237,7 +237,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                适用班级
+                适用组织
               </label>
               <div class="space-y-2">
                 <div class="flex items-center">
@@ -247,7 +247,7 @@
                     @change="toggleSelectAllClasses"
                     class="mr-2"
                   />
-                  <label class="text-sm text-gray-700"> 全部未关闭班级 </label>
+                  <label class="text-sm text-gray-700"> 全部未关闭组织 </label>
                 </div>
                 <div
                   v-for="cls in classes"
@@ -285,13 +285,13 @@
       </div>
     </div>
 
-    <!-- 班级设置弹窗 -->
+    <!-- 组织设置弹窗 -->
     <div
       v-if="showClassModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">设置奖励适用班级</h2>
+        <h2 class="text-xl font-bold mb-4">设置奖励适用组织</h2>
         <div class="space-y-4">
           <div class="flex items-center">
             <input
@@ -300,7 +300,7 @@
               @change="toggleSelectAllClassForm"
               class="mr-2"
             />
-            <label class="text-sm text-gray-700"> 全部未关闭班级 </label>
+            <label class="text-sm text-gray-700"> 全部未关闭组织 </label>
           </div>
           <div
             v-for="cls in classes"
@@ -405,7 +405,7 @@ const fetchClasses = async () => {
     }
   } catch (error) {
     classes.value = [];
-    console.log('获取班级列表失败，显示空列表');
+    console.log('获取组织列表失败，显示空列表');
   }
 };
 
@@ -555,20 +555,20 @@ const handleSubmit = async () => {
 
 const updateGiftClasses = async (giftId: number, classIds: number[]) => {
   try {
-    // 先获取当前奖励的班级列表
+    // 先获取当前奖励的组织列表
     const currentClasses = (await request.get(
       `/api/v1/gifts/${giftId}/classes`
     )) as { classes: Array<{ class_id: number }> };
     const currentClassIds = currentClasses.classes.map((c) => c.class_id);
 
-    // 移除不再选择的班级
+    // 移除不再选择的组织
     for (const classId of currentClassIds) {
       if (!classIds.includes(classId)) {
         await request.delete(`/api/v1/gifts/class/${giftId}/${classId}`);
       }
     }
 
-    // 添加新选择的班级
+    // 添加新选择的组织
     for (const classId of classIds) {
       if (!currentClassIds.includes(classId)) {
         await request.post('/api/v1/gifts/class', {
@@ -578,7 +578,7 @@ const updateGiftClasses = async (giftId: number, classIds: number[]) => {
       }
     }
   } catch (error) {
-    console.error('更新奖励班级失败:', error);
+    console.error('更新奖励组织失败:', error);
   }
 };
 
@@ -607,7 +607,7 @@ const editGift = async (gift: Gift) => {
     selectAllClasses: true,
   };
 
-  // 获取当前奖励的班级列表
+  // 获取当前奖励的组织列表
   try {
     const response = (await request.get(`/api/v1/gifts/${gift.id}/classes`)) as {
       classes: Array<{ class_id: number }>;
@@ -616,7 +616,7 @@ const editGift = async (gift: Gift) => {
     form.value.selectAllClasses =
       form.value.selectedClasses.length === classes.value.length;
   } catch (error) {
-    console.error('获取奖励班级失败:', error);
+    console.error('获取奖励组织失败:', error);
   }
 
   showCreateModal.value = true;
@@ -641,7 +641,7 @@ const manageClasses = async (gift: Gift) => {
     selectAllClasses: true,
   };
 
-  // 获取当前奖励的班级列表
+  // 获取当前奖励的组织列表
   try {
     const response = (await request.get(`/api/v1/gifts/${gift.id}/classes`)) as {
       classes: Array<{ class_id: number }>;
@@ -650,7 +650,7 @@ const manageClasses = async (gift: Gift) => {
     classForm.value.selectAllClasses =
       classForm.value.selectedClasses.length === classes.value.length;
   } catch (error) {
-    console.error('获取奖励班级失败:', error);
+    console.error('获取奖励组织失败:', error);
   }
 
   showClassModal.value = true;
@@ -666,7 +666,7 @@ const saveClassSettings = async () => {
     );
     closeClassModal();
   } catch (error) {
-    console.error('保存班级设置失败:', error);
+    console.error('保存组织设置失败:', error);
   }
 };
 

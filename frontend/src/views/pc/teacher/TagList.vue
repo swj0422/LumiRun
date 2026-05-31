@@ -7,10 +7,10 @@
       </div>
     </div>
 
-    <!-- 学员标签 -->
+    <!-- 成员标签 -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">学员标签</h2>
+        <h2 class="text-lg font-medium text-gray-900">成员标签</h2>
       </div>
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -72,7 +72,7 @@
               colspan="4"
               class="px-6 py-12 text-center text-sm text-gray-500"
             >
-              暂无学员标签数据
+              暂无成员标签数据
             </td>
           </tr>
         </tbody>
@@ -252,7 +252,7 @@
               >
               <select v-model="form.type" required class="input">
                 <option value="">请选择标签类型</option>
-                <option value="student">学员标签</option>
+                <option value="student">成员标签</option>
                 <option value="growth">成长值标签</option>
                 <option value="gift">奖励标签</option>
               </select>
@@ -331,7 +331,7 @@ const giftTags = computed(() => {
 // const getTagTypeText = (type: string): string => {
 //   switch (type) {
 //     case 'student':
-//       return '学员标签'
+//       return '成员标签'
 //     case 'growth':
 //       return '成长值标签'
 //     case 'gift':

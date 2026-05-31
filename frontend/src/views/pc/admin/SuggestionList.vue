@@ -7,7 +7,7 @@
     <div class="bg-white rounded-lg shadow p-4">
       <div class="flex flex-wrap gap-4">
         <select v-model="selectedClass" class="input w-48" @change="fetchPosts">
-          <option value="">全部班级</option>
+          <option value="">全部组织</option>
           <option v-for="cls in classes" :key="cls.id" :value="cls.id">{{ cls.class_name }}</option>
         </select>
       </div>
@@ -20,7 +20,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">内容</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">发布人</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">班级</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">组织</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">评论数</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">发布时间</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -128,7 +128,7 @@ const fetchClasses = async () => {
     const data = (await request.get('/api/v1/admin/classes')) as { items: ClassInfo[] };
     classes.value = data.items || [];
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 

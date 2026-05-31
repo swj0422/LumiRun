@@ -3,9 +3,9 @@
     <!-- 欢迎信息
     <div class="bg-white shadow rounded-lg p-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">欢迎，{{ userStore.userInfo?.real_name || '班级助理' }}</h2>
-        <p class="text-gray-600 mt-2">您当前的身份是：班级助理</p>
-        <p class="text-gray-600 mt-1">以下是您被授权管理的班级列表</p>
+        <h2 class="text-2xl font-bold text-gray-900">欢迎，{{ userStore.userInfo?.real_name || '组织助理' }}</h2>
+        <p class="text-gray-600 mt-2">您当前的身份是：组织助理</p>
+        <p class="text-gray-600 mt-1">以下是您被授权管理的组织列表</p>
       </div>
     </div> -->
 
@@ -30,7 +30,7 @@
           </div>
           <div class="ml-4">
             <h3 class="text-lg font-medium text-gray-900">成长值录入</h3>
-            <p class="text-sm text-gray-500">为授权班级学员录入成长值</p>
+            <p class="text-sm text-gray-500">为授权组织成员录入成长值</p>
             <router-link
               to="/assistant/growth"
               class="mt-2 inline-block text-sm font-medium text-primary-600 hover:text-primary-500"
@@ -90,7 +90,7 @@
           </div>
           <div class="ml-4">
             <h3 class="text-lg font-medium text-gray-900">意见征集</h3>
-            <p class="text-sm text-gray-500">参与班级意见征集</p>
+            <p class="text-sm text-gray-500">参与组织意见征集</p>
             <router-link
               to="/assistant/suggestion-forum"
               class="mt-2 inline-block text-sm font-medium text-primary-600 hover:text-primary-500"
@@ -102,9 +102,9 @@
       </div>
     </div>
 
-    <!-- 授权班级列表 -->
+    <!-- 授权组织列表 -->
     <div class="bg-white shadow rounded-lg p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">授权班级</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">授权组织</h3>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -113,7 +113,7 @@
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                班级名称
+                组织名称
               </th>
               <th
                 scope="col"
@@ -149,7 +149,7 @@
                   :to="`/assistant/students?class_id=${classItem.id}&class_name=${encodeURIComponent(classItem.school_name + classItem.session + '级' + classItem.class_name + '班')}`"
                   class="text-primary-600 hover:text-primary-500 mr-3"
                 >
-                  查看学员
+                  查看成员
                 </router-link>
                 <router-link
                   :to="`/assistant/growth?class_id=${classItem.id}`"
@@ -163,15 +163,15 @@
         </table>
       </div>
       <div v-if="classes.length === 0" class="text-center py-8">
-        <p class="text-gray-500">暂无授权班级</p>
+        <p class="text-gray-500">暂无授权组织</p>
       </div>
     </div>
 
-    <!-- 切换身份/班级模态框 -->
+    <!-- 切换身份/组织模态框 -->
     <div v-if="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">切换身份/班级</h3>
+          <h3 class="text-lg font-semibold text-gray-900">切换身份/组织</h3>
           <button
             @click="showRoleModal = false"
             class="text-gray-500 hover:text-gray-700"
@@ -192,9 +192,9 @@
           </button>
         </div>
         <div class="space-y-4">
-          <!-- 切换班级助理身份 -->
+          <!-- 切换组织助理身份 -->
           <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">当前身份：班级助理</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">当前身份：组织助理</h4>
             <div class="space-y-2">
               <div
                 v-for="cls in classes"
@@ -208,9 +208,9 @@
             </div>
           </div>
 
-          <!-- 切换学员身份 -->
+          <!-- 切换成员身份 -->
           <div v-if="isAlsoStudent">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">切换为学员身份</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">切换为成员身份</h4>
             <div class="space-y-2">
               <div
                 v-for="cls in studentClasses"
@@ -228,25 +228,25 @@
             </div>
           </div>
 
-          <!-- 没有学员身份时 -->
+          <!-- 没有成员身份时 -->
           <div v-else class="text-center py-4">
-            <p class="text-gray-500 text-sm mb-4">暂无绑定的学员班级</p>
+            <p class="text-gray-500 text-sm mb-4">暂无绑定的成员组织</p>
             <button
               @click="openBindClassModal"
               class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              去绑定新班级
+              去绑定新组织
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 绑定班级弹窗 -->
+    <!-- 绑定组织弹窗 -->
     <div v-if="showBindClassModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">绑定班级</h3>
+          <h3 class="text-lg font-semibold text-gray-900">绑定组织</h3>
           <button
             @click="closeBindClassModal"
             class="text-gray-500 hover:text-gray-700"
@@ -268,12 +268,12 @@
         </div>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级二维码内容</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织二维码内容</label>
             <div class="flex items-center space-x-2">
               <input
                 v-model="bindClassId"
                 type="text"
-                placeholder="请输入班级二维码内容（class:xxx格式）"
+                placeholder="请输入组织二维码内容（class:xxx格式）"
                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
@@ -289,7 +289,7 @@
             <p class="text-xs text-gray-500 mt-1">二维码内容通常以"class:"开头</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级内姓名</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织内姓名</label>
             <input
               v-model="bindNameInClass"
               type="text"
@@ -298,7 +298,7 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级内学号</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织内学号</label>
             <input
               v-model="bindStudentNoInClass"
               type="text"
@@ -310,7 +310,7 @@
             @click="submitBindClass"
             class="w-full btn-primary py-2"
           >
-            绑定班级
+            绑定组织
           </button>
         </div>
       </div>
@@ -321,7 +321,7 @@
       <div class="relative w-full max-w-md">
         <div class="bg-white rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">扫描班级码</h3>
+            <h3 class="text-lg font-semibold text-gray-900">扫描组织码</h3>
             <button
               @click="closeScanner"
               class="text-gray-500 hover:text-gray-700"
@@ -346,7 +346,7 @@
             class="w-full aspect-square bg-gray-100 rounded-lg mb-4"
           ></div>
           <p class="text-sm text-gray-600 text-center">
-            请将班级二维码置于扫描框内
+            请将组织二维码置于扫描框内
           </p>
           <div class="mt-4 flex justify-center">
             <button @click="closeScanner" class="text-sm text-primary-600">
@@ -372,7 +372,7 @@ const isAlsoStudent = ref(false);
 const showRoleModal = ref(false);
 const studentClasses = ref<any[]>([]);
 
-// 绑定班级相关
+// 绑定组织相关
 const showBindClassModal = ref(false);
 const showScanner = ref(false);
 const bindClassId = ref('');
@@ -380,10 +380,10 @@ const bindNameInClass = ref('');
 const bindStudentNoInClass = ref('');
 let html5Qrcode: Html5Qrcode | null = null;
 
-// 检查用户是否同时也是学员
+// 检查用户是否同时也是成员
 const checkStudentStatus = async () => {
   try {
-    // 检查用户是否有学员绑定记录
+    // 检查用户是否有成员绑定记录
     const response = await request.get('/api/v1/students/my-classes');
     if (response && Array.isArray(response) && response.length > 0) {
       isAlsoStudent.value = true;
@@ -393,13 +393,13 @@ const checkStudentStatus = async () => {
       studentClasses.value = [];
     }
   } catch (error) {
-    console.error('检查学员状态失败:', error);
+    console.error('检查成员状态失败:', error);
     isAlsoStudent.value = false;
     studentClasses.value = [];
   }
 };
 
-// 选择切换到特定班级的学员身份
+// 选择切换到特定组织的成员身份
 const selectStudentClass = (cls: any) => {
   showRoleModal.value = false;
   localStorage.setItem('selectedRole', 'student');
@@ -407,28 +407,28 @@ const selectStudentClass = (cls: any) => {
   router.push('/student');
 };
 
-// 打开绑定班级弹窗
+// 打开绑定组织弹窗
 const openBindClassModal = () => {
   showBindClassModal.value = true;
 };
 
-// 关闭绑定班级弹窗
+// 关闭绑定组织弹窗
 const closeBindClassModal = () => {
   showBindClassModal.value = false;
 };
 
-// 提交绑定班级
+// 提交绑定组织
 const submitBindClass = async () => {
   if (!bindClassId.value) {
-    alert('请输入班级二维码内容');
+    alert('请输入组织二维码内容');
     return;
   }
   if (!bindNameInClass.value) {
-    alert('请输入班级内姓名');
+    alert('请输入组织内姓名');
     return;
   }
   if (!bindStudentNoInClass.value) {
-    alert('请输入班级内学号');
+    alert('请输入组织内学号');
     return;
   }
 
@@ -441,7 +441,7 @@ const submitBindClass = async () => {
   }
 
   if (!qrCode) {
-    alert('无效的班级二维码内容');
+    alert('无效的组织二维码内容');
     return;
   }
 
@@ -450,8 +450,8 @@ const submitBindClass = async () => {
     try {
       await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('验证班级信息失败:', error);
-      alert('无效的班级二维码内容或班级不存在');
+      console.error('验证组织信息失败:', error);
+      alert('无效的组织二维码内容或组织不存在');
       return;
     }
 
@@ -467,10 +467,10 @@ const submitBindClass = async () => {
     if (response.message === '绑定成功') {
       alert('绑定成功！');
       closeBindClassModal();
-      // 重新检查学员状态
+      // 重新检查成员状态
       await checkStudentStatus();
-    } else if (response.message === '绑定申请已提交，请等待导师审批') {
-      alert('绑定申请已提交，请等待导师审批');
+    } else if (response.message === '绑定申请已提交，请等待管理者审批') {
+      alert('绑定申请已提交，请等待管理者审批');
       closeBindClassModal();
     } else {
       alert('绑定失败：' + (response.message || '未知错误'));
@@ -546,26 +546,26 @@ const handleScanResult = async (result: string) => {
     }
 
     if (!qrCode) {
-      alert('无效的班级二维码');
+      alert('无效的组织二维码');
       return;
     }
 
-    // 通过 qr_code 获取班级信息
+    // 通过 qr_code 获取组织信息
     let classInfo;
     try {
       classInfo = await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('获取班级信息失败:', error);
-      alert('无效的班级二维码或班级不存在');
+      console.error('获取组织信息失败:', error);
+      alert('无效的组织二维码或组织不存在');
       return;
     }
 
     if (!classInfo || !classInfo.id) {
-      alert('无效的班级二维码或班级不存在');
+      alert('无效的组织二维码或组织不存在');
       return;
     }
 
-    // 填充班级二维码内容并重新打开绑定弹窗
+    // 填充组织二维码内容并重新打开绑定弹窗
     bindClassId.value = result;
     showBindClassModal.value = true;
   } catch (error) {
@@ -579,7 +579,7 @@ const fetchClasses = async () => {
     const data = await getUserAssistantClasses();
     classes.value = (data as any).items || [];
   } catch (error) {
-    console.error('获取授权班级失败:', error);
+    console.error('获取授权组织失败:', error);
     classes.value = [];
   }
 };

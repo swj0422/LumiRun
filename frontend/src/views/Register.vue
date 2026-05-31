@@ -40,7 +40,7 @@
             "
           >
             <div class="text-2xl mb-2">🎓</div>
-            <div class="font-medium">学员</div>
+            <div class="font-medium">成员</div>
             <div class="text-xs text-gray-500 mt-1">无需审核，直接可用</div>
           </button>
           <button
@@ -53,7 +53,7 @@
             "
           >
             <div class="text-2xl mb-2">👨‍🏫</div>
-            <div class="font-medium">导师</div>
+            <div class="font-medium">管理者</div>
             <div class="text-xs text-gray-500 mt-1">需要管理员审核</div>
           </button>
         </div>

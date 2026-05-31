@@ -53,7 +53,7 @@
           </div>
           
           <div v-if="wish.teacher_comment" class="bg-primary-50 p-3 rounded-lg">
-            <p class="text-xs text-primary-600 mb-1">导师回复</p>
+            <p class="text-xs text-primary-600 mb-1">管理者回复</p>
             <p class="text-sm text-primary-800">{{ wish.teacher_comment }}</p>
           </div>
           
@@ -119,14 +119,14 @@
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">选择导师 *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">选择管理者 *</label>
               <select
                 v-model="formData.class_id"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
-                <option value="">请选择导师</option>
+                <option value="">请选择管理者</option>
                 <option v-for="cls in bindClasses" :key="cls.class_id" :value="cls.class_id">
-                  {{ cls.teacher_name || '未知导师' }} - {{ cls.school_name }} {{ cls.session }}级 {{ cls.class_name }}班
+                  {{ cls.teacher_name || '未知管理者' }} - {{ cls.school_name }} {{ cls.session }}级 {{ cls.class_name }}班
                 </option>
               </select>
             </div>
@@ -225,13 +225,13 @@ const fetchBindClasses = async () => {
     const response = await request.get('/api/v1/students/my-classes');
     if (response) {
       bindClasses.value = response;
-      // 如果只有一个绑定班级，自动选中
+      // 如果只有一个绑定组织，自动选中
       if (bindClasses.value.length === 1) {
         formData.value.class_id = bindClasses.value[0].class_id.toString();
       }
     }
   } catch (error) {
-    console.error('获取绑定班级失败:', error);
+    console.error('获取绑定组织失败:', error);
   }
 };
 

@@ -57,6 +57,14 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const isLoginRequest = config.url?.includes('/auth/login');
     
+    if (!isLoginRequest) {
+      const token = getTokenFromCookie();
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    
     if (config.data instanceof FormData) {
       if (config.headers) {
         delete config.headers['Content-Type'];

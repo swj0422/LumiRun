@@ -40,7 +40,7 @@ const router = createRouter({
       component: () => import('@/views/RoleSelection.vue'),
       meta: { public: false },
     },
-    // 导师端
+    // 管理者端
     {
       path: '/teacher',
       component: () => import('@/layouts/TeacherLayout.vue'),
@@ -104,7 +104,7 @@ const router = createRouter({
         },
       ],
     },
-    // 班级助理端
+    // 组织助理端
     {
       path: '/assistant',
       component: () => import('@/layouts/AssistantLayout.vue'),
@@ -142,7 +142,7 @@ const router = createRouter({
         },
       ],
     },
-    // 学员端
+    // 成员端
     {
       path: '/student',
       component: () => import('@/layouts/StudentLayout.vue'),
@@ -308,19 +308,19 @@ router.beforeEach(async (to, _from, next) => {
       return;
     }
     
-    // 检查是否是班级助理（基于student角色的权限）
+    // 检查是否是组织助理（基于student角色的权限）
     const isClassAssistant = localStorage.getItem('isClassAssistant') === 'true';
     const selectedRole = localStorage.getItem('selectedRole');
     
-    // 班级助理可以访问助理端页面
+    // 组织助理可以访问助理端页面
     if (userRole === 'student' && isClassAssistant && to.meta.role === 'class_assistant') {
       next();
       return;
     }
     
-    // 班级助理可以访问导师端的部分页面
+    // 组织助理可以访问管理者端的部分页面
     if (userRole === 'student' && isClassAssistant && to.meta.role === 'teacher') {
-      // 班级助理可以访问的页面
+      // 组织助理可以访问的页面
       const allowedPaths = [
         '/teacher',
         '/teacher/classes',
@@ -350,7 +350,7 @@ router.beforeEach(async (to, _from, next) => {
       }
     }
     
-    // 允许班级助理切换到学员身份
+    // 允许组织助理切换到成员身份
     if (userRole === 'student' && to.meta.role === 'student') {
       next();
       return;

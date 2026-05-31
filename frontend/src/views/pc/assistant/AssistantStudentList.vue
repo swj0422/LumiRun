@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">学员管理</h1>
+      <h1 class="text-2xl font-bold text-gray-900">成员管理</h1>
       <div class="flex items-center space-x-4">
         <div class="relative">
           <select v-model="selectedClassId" class="input pr-8">
-            <option value="">选择班级</option>
+            <option value="">选择组织</option>
             <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
               {{ classItem.school_name }} {{ classItem.session }}级 {{ classItem.class_name }}班
             </option>
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <!-- 学员列表 -->
+    <!-- 成员列表 -->
     <div class="bg-white shadow rounded-lg p-6">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -79,7 +79,7 @@
         </table>
       </div>
       <div v-if="students.length === 0" class="text-center py-8">
-        <p class="text-gray-500">暂无学员数据</p>
+        <p class="text-gray-500">暂无成员数据</p>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@ const classes = ref<any[]>([]);
 const students = ref<any[]>([]);
 const selectedClassId = ref('');
 
-// 从路由参数中获取班级ID
+// 从路由参数中获取组织ID
 const initClassId = () => {
   const classId = route.query.class_id;
   if (classId) {
@@ -104,22 +104,22 @@ const initClassId = () => {
   }
 };
 
-// 获取授权班级列表
+// 获取授权组织列表
 const fetchClasses = async () => {
   try {
     const data = await getUserAssistantClasses();
     classes.value = (data as any).items || [];
-    // 如果没有选择班级，默认选择第一个
+    // 如果没有选择组织，默认选择第一个
     if (!selectedClassId.value && classes.value.length > 0) {
       selectedClassId.value = classes.value[0].id;
     }
   } catch (error) {
-    console.error('获取授权班级失败:', error);
+    console.error('获取授权组织失败:', error);
     classes.value = [];
   }
 };
 
-// 获取班级学员列表
+// 获取组织成员列表
 const fetchStudents = async () => {
   if (!selectedClassId.value) {
     students.value = [];
@@ -130,7 +130,7 @@ const fetchStudents = async () => {
     const data = await request.get(`/api/v1/classes/${selectedClassId.value}/students`);
     students.value = (data as any).items || [];
   } catch (error) {
-    console.error('获取学员列表失败:', error);
+    console.error('获取成员列表失败:', error);
     students.value = [];
   }
 };
@@ -174,7 +174,7 @@ const getBindStatusText = (status: string) => {
   }
 };
 
-// 监听班级选择变化
+// 监听组织选择变化
 watch(selectedClassId, () => {
   fetchStudents();
 });

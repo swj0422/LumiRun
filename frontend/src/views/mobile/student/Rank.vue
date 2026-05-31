@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <div class="bg-white shadow rounded-lg p-6">
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">班级排名</h1>
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">组织排名</h1>
       
-      <!-- 班级切换 -->
+      <!-- 组织切换 -->
       <div v-if="bindClasses.length > 1" class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">选择班级</h2>
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">选择组织</h2>
         <div class="flex flex-wrap gap-2">
           <button 
             v-for="cls in bindClasses"
@@ -119,23 +119,23 @@ const currentUserRank = computed(() => {
   return null;
 });
 
-// 获取绑定的班级列表
+// 获取绑定的组织列表
 const fetchBindClasses = async () => {
   try {
     const response = await request.get('/api/v1/students/my-classes');
     if (response && response.length > 0) {
       bindClasses.value = response;
-      // 默认选择第一个班级
+      // 默认选择第一个组织
       if (!selectedClassId.value && response[0] && response[0].class_id) {
         selectedClassId.value = response[0].class_id;
       }
     }
   } catch (error) {
-    console.error('获取绑定班级失败:', error);
+    console.error('获取绑定组织失败:', error);
   }
 };
 
-// 获取班级排名
+// 获取组织排名
 const fetchRankList = async () => {
   try {
     if (!selectedClassId.value || selectedClassId.value === undefined || selectedClassId.value === null) {
@@ -150,7 +150,7 @@ const fetchRankList = async () => {
   }
 };
 
-// 选择班级
+// 选择组织
 const selectClass = async (classId: number) => {
   selectedClassId.value = classId;
   await fetchRankList();

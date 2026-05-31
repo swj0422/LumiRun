@@ -171,13 +171,13 @@
               to="/register?role=student"
               class="btn-secondary w-full text-center"
             >
-              学员注册
+              成员注册
             </router-link>
             <router-link
               to="/register?role=teacher"
               class="btn-secondary w-full text-center"
             >
-              导师注册
+              管理者注册
             </router-link>
           </div>
         </div>

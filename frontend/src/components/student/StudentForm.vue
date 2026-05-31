@@ -3,19 +3,19 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
-      <h3 class="text-lg font-bold mb-4">学员详情</h3>
+      <h3 class="text-lg font-bold mb-4">成员详情</h3>
       <div class="space-y-6">
         <!-- 基本信息 -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
-              >学员姓名</label
+              >成员姓名</label
             >
             <input
               v-model="form.real_name"
               type="text"
               class="input w-full"
-              placeholder="请输入学员姓名"
+              placeholder="请输入成员姓名"
             />
           </div>
           <div>
@@ -28,7 +28,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
-              >班级</label
+              >组织</label
             >
             <div class="text-gray-700">{{ student?.class_name }}</div>
           </div>
@@ -145,12 +145,12 @@ const selectedTags = ref<number[]>([]);
 const originalSelectedTags = ref<number[]>([]);
 const availableStudentTags = ref<any[]>([]);
 
-// 加载学员标签
+// 加载成员标签
 const loadStudentTags = async () => {
   if (!props.student) return;
 
   try {
-    // 获取学员标签
+    // 获取成员标签
       const tagsResponse = await request.get(
         `/v1/students/tags/${props.student.id}`
       );
@@ -168,7 +168,7 @@ const loadStudentTags = async () => {
         }
       }
 
-      // 获取可用标签（只获取学员标签）
+      // 获取可用标签（只获取成员标签）
       const availableTagsResponse = await request.get('/v1/tags/?type=student');
       if (Array.isArray(availableTagsResponse)) {
         // 响应是数组，直接使用
@@ -182,7 +182,7 @@ const loadStudentTags = async () => {
         }
       }
 
-      // 获取学员备注
+      // 获取成员备注
       const noteResponse = await request.get(
         `/v1/students/note/${props.student.id}`
       );
@@ -210,7 +210,7 @@ const loadStudentTags = async () => {
         }
       }
   } catch (error) {
-    console.error('加载学员标签失败:', error);
+    console.error('加载成员标签失败:', error);
   }
 };
 

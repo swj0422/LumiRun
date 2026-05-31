@@ -53,7 +53,7 @@
           >
             <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="item.name === '首页'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              <path v-else-if="item.name === '学员管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <path v-else-if="item.name === '成员管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               <path v-else-if="item.name === '成长管理'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               <path v-else-if="item.name === '意见征集'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               <path v-else-if="item.name === '心愿便利贴'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -67,7 +67,7 @@
       <!-- 用户信息和操作 -->
       <div class="px-3 py-3 border-t border-gray-200">
         <div v-if="!sidebarCollapsed" class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-700 truncate flex-1">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
+          <span class="text-sm text-gray-700 truncate flex-1">组织助理: {{ studentName || userStore.userInfo?.real_name }}</span>
           <button
             @click="showRoleModal = true"
             class="flex items-center text-sm text-gray-500 hover:text-gray-700 ml-2"
@@ -170,11 +170,11 @@
             @click="showRoleModal = true; mobileMenuOpen = false"
             class="block w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-left"
           >
-            切换班级/学员
+            切换组织/成员
           </button>
           <div class="pt-4 border-t border-gray-200">
             <div class="flex items-center justify-between">
-              <span class="text-base font-medium text-gray-700">班级助理: {{ studentName || userStore.userInfo?.real_name }}</span>
+              <span class="text-base font-medium text-gray-700">组织助理: {{ studentName || userStore.userInfo?.real_name }}</span>
               <button @click="handleLogout" class="text-base font-medium text-gray-500 hover:text-gray-700">退出</button>
             </div>
           </div>
@@ -193,11 +193,11 @@
       </div>
     </main>
 
-    <!-- 切换身份/班级模态框 -->
+    <!-- 切换身份/组织模态框 -->
     <div v-if="showRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">切换身份/班级</h3>
+          <h3 class="text-lg font-semibold text-gray-900">切换身份/组织</h3>
           <button @click="showRoleModal = false" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -206,7 +206,7 @@
         </div>
         <div class="space-y-4">
           <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">当前身份：班级助理</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">当前身份：组织助理</h4>
             <div class="space-y-2">
               <div
                 v-for="cls in assistantClasses"
@@ -221,7 +221,7 @@
           </div>
 
           <div v-if="isAlsoStudent">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">切换为学员身份</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">切换为成员身份</h4>
             <div class="space-y-2">
               <div
                 v-for="cls in studentClasses"
@@ -238,23 +238,23 @@
           </div>
 
           <div v-else class="text-center py-4">
-            <p class="text-gray-500 text-sm mb-4">暂无绑定的学员班级</p>
+            <p class="text-gray-500 text-sm mb-4">暂无绑定的成员组织</p>
             <button 
               @click="openBindClassModal"
               class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              去绑定新班级
+              去绑定新组织
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 绑定班级弹窗 -->
+    <!-- 绑定组织弹窗 -->
     <div v-if="showBindClassModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">绑定班级</h3>
+          <h3 class="text-lg font-semibold text-gray-900">绑定组织</h3>
           <button @click="closeBindClassModal" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -263,12 +263,12 @@
         </div>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级二维码内容</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织二维码内容</label>
             <div class="flex items-center space-x-2">
               <input
                 v-model="bindClassId"
                 type="text"
-                placeholder="请输入班级二维码内容（class:xxx格式）"
+                placeholder="请输入组织二维码内容（class:xxx格式）"
                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
@@ -284,7 +284,7 @@
             <p class="text-xs text-gray-500 mt-1">二维码内容通常以"class:"开头</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级内姓名</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织内姓名</label>
             <input
               v-model="bindNameInClass"
               type="text"
@@ -293,7 +293,7 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">班级内学号</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">组织内学号</label>
             <input
               v-model="bindStudentNoInClass"
               type="text"
@@ -302,7 +302,7 @@
             />
           </div>
           <button @click="submitBindClass" class="w-full btn-primary py-2">
-            绑定班级
+            绑定组织
           </button>
         </div>
       </div>
@@ -313,7 +313,7 @@
       <div class="relative w-full max-w-md">
         <div class="bg-white rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">扫描班级码</h3>
+            <h3 class="text-lg font-semibold text-gray-900">扫描组织码</h3>
             <button @click="closeScanner" class="text-gray-500 hover:text-gray-700">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -321,7 +321,7 @@
             </button>
           </div>
           <div id="qr-code-scanner-assistant-layout" class="w-full aspect-square bg-gray-100 rounded-lg mb-4"></div>
-          <p class="text-sm text-gray-600 text-center">请将班级二维码置于扫描框内</p>
+          <p class="text-sm text-gray-600 text-center">请将组织二维码置于扫描框内</p>
           <div class="mt-4 flex justify-center">
             <button @click="closeScanner" class="text-sm text-primary-600">取消</button>
           </div>
@@ -363,7 +363,7 @@ const fetchAssistantClasses = async () => {
       assistantClasses.value = response;
     }
   } catch (error) {
-    console.error('获取授权班级失败:', error);
+    console.error('获取授权组织失败:', error);
     assistantClasses.value = [];
   }
 };
@@ -381,7 +381,7 @@ const checkStudentStatus = async () => {
       studentName.value = '';
     }
   } catch (error) {
-    console.error('检查学员状态失败:', error);
+    console.error('检查成员状态失败:', error);
     isAlsoStudent.value = false;
     studentClasses.value = [];
     studentName.value = '';
@@ -405,15 +405,15 @@ const closeBindClassModal = () => {
 
 const submitBindClass = async () => {
   if (!bindClassId.value) {
-    alert('请输入班级二维码内容');
+    alert('请输入组织二维码内容');
     return;
   }
   if (!bindNameInClass.value) {
-    alert('请输入班级内姓名');
+    alert('请输入组织内姓名');
     return;
   }
   if (!bindStudentNoInClass.value) {
-    alert('请输入班级内学号');
+    alert('请输入组织内学号');
     return;
   }
 
@@ -425,7 +425,7 @@ const submitBindClass = async () => {
   }
 
   if (!qrCode) {
-    alert('无效的班级二维码内容');
+    alert('无效的组织二维码内容');
     return;
   }
 
@@ -433,8 +433,8 @@ const submitBindClass = async () => {
     try {
       await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('验证班级信息失败:', error);
-      alert('无效的班级二维码内容或班级不存在');
+      console.error('验证组织信息失败:', error);
+      alert('无效的组织二维码内容或组织不存在');
       return;
     }
 
@@ -450,8 +450,8 @@ const submitBindClass = async () => {
       alert('绑定成功！');
       closeBindClassModal();
       await checkStudentStatus();
-    } else if (response.message === '绑定申请已提交，请等待导师审批') {
-      alert('绑定申请已提交，请等待导师审批');
+    } else if (response.message === '绑定申请已提交，请等待管理者审批') {
+      alert('绑定申请已提交，请等待管理者审批');
       closeBindClassModal();
     } else {
       alert('绑定失败：' + (response.message || '未知错误'));
@@ -519,7 +519,7 @@ const handleScanResult = async (result: string) => {
     }
 
     if (!qrCode) {
-      alert('无效的班级二维码');
+      alert('无效的组织二维码');
       return;
     }
 
@@ -527,13 +527,13 @@ const handleScanResult = async (result: string) => {
     try {
       classInfo = await request.get(`/api/v1/classes/qr/${qrCode}`);
     } catch (error: any) {
-      console.error('获取班级信息失败:', error);
-      alert('无效的班级二维码或班级不存在');
+      console.error('获取组织信息失败:', error);
+      alert('无效的组织二维码或组织不存在');
       return;
     }
 
     if (!classInfo || !classInfo.id) {
-      alert('无效的班级二维码或班级不存在');
+      alert('无效的组织二维码或组织不存在');
       return;
     }
 
@@ -553,7 +553,7 @@ onMounted(async () => {
 const navItems = computed(() => {
   return [
     { name: '首页', path: '/assistant' },
-    { name: '学员管理', path: '/assistant/students' },
+    { name: '成员管理', path: '/assistant/students' },
     { name: '成长管理', path: '/assistant/growth' },
     { name: '意见征集', path: '/assistant/suggestion-forum' },
     { name: '心愿便利贴', path: '/assistant/wish-wall' },

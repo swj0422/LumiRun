@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">班级管理</h1>
+      <h1 class="text-2xl font-bold text-gray-900">组织管理</h1>
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">
@@ -10,7 +10,7 @@
           v-model="searchKeyword"
           type="text"
           class="input flex-1 min-w-[200px]"
-          placeholder="搜索学校或班级名称"
+          placeholder="搜索学校或组织名称"
           @input="handleSearch"
         />
         <select v-model="selectedStatus" class="input w-32" @change="fetchClasses">
@@ -27,9 +27,9 @@
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">学校</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">届别</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">班级名称</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">导师</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">学员数</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">组织名称</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">管理者</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">成员数</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -49,7 +49,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(cls.created_at) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
-              <button @click="viewStudents(cls)" class="text-blue-600 hover:text-blue-700 mr-2">学员</button>
+              <button @click="viewStudents(cls)" class="text-blue-600 hover:text-blue-700 mr-2">成员</button>
               <button @click="viewGrowth(cls)" class="text-green-600 hover:text-green-700 mr-2">成长记录</button>
               <button
                 v-if="cls.status"
@@ -66,14 +66,14 @@
       </table>
 
       <div v-if="classes.length === 0" class="text-center py-12">
-        <p class="text-gray-500">暂无班级数据</p>
+        <p class="text-gray-500">暂无组织数据</p>
       </div>
     </div>
 
     <div v-if="showStudentsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">班级学员 - {{ selectedClass?.class_name }}</h2>
+          <h2 class="text-xl font-bold">组织成员 - {{ selectedClass?.class_name }}</h2>
           <button @click="showStudentsModal = false" class="text-gray-400 hover:text-gray-600">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -85,7 +85,7 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">姓名</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">班级昵称</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">组织昵称</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">绑定状态</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">创建时间</th>
               </tr>
@@ -104,7 +104,7 @@
             </tbody>
           </table>
           <div v-if="students.length === 0" class="text-center py-8">
-            <p class="text-gray-500">暂无学员数据</p>
+            <p class="text-gray-500">暂无成员数据</p>
           </div>
         </div>
       </div>
@@ -124,7 +124,7 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">学员</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">成员</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">变化值</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">原因</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作人</th>
@@ -203,7 +203,7 @@ const fetchClasses = async () => {
     const data = (await request.get('/api/v1/admin/classes', { params })) as { items: ClassInfo[] };
     classes.value = data.items || [];
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 
@@ -218,7 +218,7 @@ const viewStudents = async (cls: ClassInfo) => {
     students.value = data.items || [];
     showStudentsModal.value = true;
   } catch (error) {
-    console.error('获取学员列表失败:', error);
+    console.error('获取成员列表失败:', error);
   }
 };
 
@@ -234,12 +234,12 @@ const viewGrowth = async (cls: ClassInfo) => {
 };
 
 const closeClass = async (classId: number) => {
-  if (!confirm('确定要关闭该班级吗？')) return;
+  if (!confirm('确定要关闭该组织吗？')) return;
   try {
     await request.put(`/api/v1/admin/classes/${classId}/status`, { status: false });
     fetchClasses();
   } catch (error) {
-    console.error('关闭班级失败:', error);
+    console.error('关闭组织失败:', error);
   }
 };
 
@@ -248,17 +248,17 @@ const openClass = async (classId: number) => {
     await request.put(`/api/v1/admin/classes/${classId}/status`, { status: true });
     fetchClasses();
   } catch (error) {
-    console.error('开放班级失败:', error);
+    console.error('开放组织失败:', error);
   }
 };
 
 const deleteClass = async (cls: ClassInfo) => {
-  if (!confirm(`确定要删除班级"${cls.class_name}"吗？此操作不可恢复。`)) return;
+  if (!confirm(`确定要删除组织"${cls.class_name}"吗？此操作不可恢复。`)) return;
   try {
     await request.delete(`/api/v1/admin/classes/${cls.id}`);
     fetchClasses();
   } catch (error) {
-    console.error('删除班级失败:', error);
+    console.error('删除组织失败:', error);
   }
 };
 

@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="mt-3 text-xs text-gray-400">
-          导师: {{ stats.teacherCount }} | 学员: {{ stats.studentCount }}
+          管理者: {{ stats.teacherCount }} | 成员: {{ stats.studentCount }}
         </div>
       </div>
 
@@ -59,7 +59,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">班级总数</p>
+            <p class="text-sm font-medium text-gray-500">组织总数</p>
             <p class="text-2xl font-bold text-gray-900">
               {{ stats.classCount }}
             </p>
@@ -93,7 +93,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">待审核导师</p>
+            <p class="text-sm font-medium text-gray-500">待审核管理者</p>
             <p class="text-2xl font-bold text-gray-900">
               {{ stats.pendingTeacherCount }}
             </p>
@@ -136,7 +136,7 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-4">今日统计</h2>
         <div class="space-y-4">
           <div class="flex justify-between items-center py-2 border-b border-gray-100">
-            <span class="text-sm text-gray-600">新增班级</span>
+            <span class="text-sm text-gray-600">新增组织</span>
             <span class="text-lg font-semibold text-blue-600">{{ stats.todayNewClassCount }}</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gray-100">
@@ -152,7 +152,7 @@
 
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-900">待审核导师</h2>
+          <h2 class="text-lg font-semibold text-gray-900">待审核管理者</h2>
           <router-link
             v-if="pendingTeachers.length > 0"
             to="/admin/users?role_id=3&status=false"
@@ -166,7 +166,7 @@
             v-if="pendingTeachers.length === 0"
             class="text-center py-4 text-gray-500"
           >
-            暂无待审核导师
+            暂无待审核管理者
           </div>
           <div
             v-for="teacher in pendingTeachers"
@@ -283,7 +283,7 @@ const fetchPendingTeachers = async () => {
     })) as { items: any[] };
     pendingTeachers.value = data.items || [];
   } catch (error) {
-    console.error('获取待审核导师失败:', error);
+    console.error('获取待审核管理者失败:', error);
   }
 };
 

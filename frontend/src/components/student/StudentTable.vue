@@ -13,13 +13,13 @@
             scope="col"
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            学员
+            成员
           </th>
           <th
             scope="col"
             class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            班级
+            组织
           </th>
           <th
             scope="col"
@@ -93,7 +93,7 @@
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-              {{ student.class_name || '未知班级' }}
+              {{ student.class_name || '未知组织' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
               {{ student.school_name || '未知单位' }}

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">历史学员</h1>
+      <h1 class="text-2xl font-bold text-gray-900">历史成员</h1>
     </div>
 
     <!-- 搜索 -->
@@ -12,14 +12,14 @@
             v-model="searchKeyword"
             type="text"
             class="input w-full"
-            placeholder="搜索学员姓名"
+            placeholder="搜索成员姓名"
             @input="handleSearch"
           />
         </div>
       </div>
     </div>
 
-    <!-- 历史学员列表 -->
+    <!-- 历史成员列表 -->
     <div class="bg-white rounded-lg shadow p-4">
       <div class="overflow-x-auto">
         <table class="min-w-full">
@@ -38,7 +38,7 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                班级
+                组织
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -163,7 +163,7 @@ const emit = defineEmits<{
   'refresh-students': [];
 }>();
 
-// 历史学员相关状态
+// 历史成员相关状态
 const historyStudents = ref<Student[]>([]);
 const historyStudentsTotal = ref(0);
 const skip = ref(0);
@@ -177,12 +177,12 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('zh-CN');
 };
 
-// 获取历史学员
+// 获取历史成员
 const fetchHistoryStudents = async () => {
   try {
-    console.log('开始获取历史学员数据');
+    console.log('开始获取历史成员数据');
 
-    // 直接尝试获取历史学员数据，不依赖用户登录状态
+    // 直接尝试获取历史成员数据，不依赖用户登录状态
     // 因为request拦截器会自动处理token
     const params = new URLSearchParams();
     if (searchKeyword.value) {
@@ -196,7 +196,7 @@ const fetchHistoryStudents = async () => {
     const url = `/v1/students/history-students?${params.toString()}`;
     console.log('发送请求:', url);
     const data = await request.get<any>(url);
-    console.log('获取到的历史学员数据:', data);
+    console.log('获取到的历史成员数据:', data);
 
     // 检查响应数据格式
     if (data && typeof data === 'object') {
@@ -223,10 +223,10 @@ const fetchHistoryStudents = async () => {
       historyStudentsTotal.value = 0;
     }
 
-    console.log('处理后的历史学员数据:', historyStudents.value);
-    console.log('历史学员总数:', historyStudentsTotal.value);
+    console.log('处理后的历史成员数据:', historyStudents.value);
+    console.log('历史成员总数:', historyStudentsTotal.value);
   } catch (error) {
-    console.error('获取历史学员失败:', error);
+    console.error('获取历史成员失败:', error);
     // 打印更详细的错误信息
     if (error instanceof Error) {
       console.error('错误消息:', error.message);
@@ -239,24 +239,24 @@ const fetchHistoryStudents = async () => {
   }
 };
 
-// 处理历史学员搜索
+// 处理历史成员搜索
 const handleSearch = () => {
   skip.value = 0;
   fetchHistoryStudents();
 };
 
-// 恢复学员
+// 恢复成员
 const restoreStudent = async (student: Student) => {
   if (confirm(`确定要恢复${student.name_in_class}吗？`)) {
     try {
       const response = await request.post(`/v1/students/restore/${student.id}`);
-      // 刷新历史学员列表
+      // 刷新历史成员列表
       fetchHistoryStudents();
-      // 通知父组件刷新学员列表
+      // 通知父组件刷新成员列表
       emit('refresh-students');
       alert('恢复成功');
     } catch (error) {
-      console.error('恢复学员失败:', error);
+      console.error('恢复成员失败:', error);
       alert('恢复失败，请稍后重试');
     }
   }

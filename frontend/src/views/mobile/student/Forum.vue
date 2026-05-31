@@ -108,7 +108,7 @@
             <h4 class="text-lg font-medium text-gray-900 mb-2">{{ currentPost.title }}</h4>
             <p class="text-sm text-gray-600 mb-3">{{ currentPost.content }}</p>
             <div class="flex items-center text-xs text-gray-500 space-x-4">
-              <span>学员</span>
+              <span>成员</span>
               <span>{{ new Date(currentPost.created_at).toLocaleDateString() }}</span>
             </div>
             <div class="mt-3 flex items-center space-x-4">
@@ -139,7 +139,7 @@
             <div class="space-y-3">
               <div v-for="comment in currentPost.comments" :key="comment.id" class="text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-700">学员</span>
+                  <span class="text-gray-700">成员</span>
                   <span class="text-gray-500 text-xs">{{ new Date(comment.created_at).toLocaleDateString() }}</span>
                 </div>
                 <p class="mt-1 text-gray-600">{{ comment.content }}</p>

@@ -153,6 +153,29 @@ async def create_user(
         )
 
 
+@router.put("/password", response_model=dict)
+async def change_password(
+    password_data: PasswordChange,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """修改密码"""
+    try:
+        await UserService.change_password(
+            db, current_user,
+            password_data.old_password,
+            password_data.new_password
+        )
+        return {
+            "message": "密码修改成功"
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
 @router.put("/{user_id}", response_model=dict)
 async def update_user(
     user_id: int,
@@ -226,28 +249,5 @@ async def disable_user(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
-
-
-@router.put("/password", response_model=dict)
-async def change_password(
-    password_data: PasswordChange,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """修改密码"""
-    try:
-        await UserService.change_password(
-            db, current_user,
-            password_data.old_password,
-            password_data.new_password
-        )
-        return {
-            "message": "密码修改成功"
-        }
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )

@@ -24,7 +24,7 @@
             <svg class="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            兑换后请等待导师审核
+            兑换后请等待管理者审核
           </li>
           <li class="flex items-start">
             <svg class="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           <h3 class="mt-2 text-sm font-medium text-gray-900">暂无可兑换的奖励</h3>
-          <p class="mt-1 text-sm text-gray-500">当前班级暂无开放兑换的奖励</p>
+          <p class="mt-1 text-sm text-gray-500">当前组织暂无开放兑换的奖励</p>
         </div>
         <div v-else class="grid grid-cols-4 gap-3">
           <div
@@ -213,15 +213,15 @@ const fetchGrowthScore = async () => {
 const fetchGifts = async () => {
   loading.value = true;
   try {
-    // 先获取班级信息
-    console.log('[DEBUG] fetchGifts - 开始获取班级信息');
+    // 先获取组织信息
+    console.log('[DEBUG] fetchGifts - 开始获取组织信息');
     const classResponse = await request.get('/api/v1/students/my-classes');
-    console.log('[DEBUG] fetchGifts - 班级响应:', classResponse);
+    console.log('[DEBUG] fetchGifts - 组织响应:', classResponse);
     if (classResponse && Array.isArray(classResponse) && classResponse.length > 0) {
       currentClassId.value = classResponse[0].class_id;
       console.log('[DEBUG] fetchGifts - 设置 currentClassId:', currentClassId.value);
     } else {
-      console.log('[DEBUG] fetchGifts - 未找到班级或响应格式不对');
+      console.log('[DEBUG] fetchGifts - 未找到组织或响应格式不对');
     }
 
     // 再获取礼品列表
@@ -298,7 +298,7 @@ const confirmExchange = async () => {
     console.log('[DEBUG] exchangeGift response:', response);
     // 检查响应是否有id或status字段表示成功
     if (response && (response.id || response.status === 0)) {
-      alert(`兑换成功！共兑换 ${exchangeQuantity.value} 件，请等待导师审核。`);
+      alert(`兑换成功！共兑换 ${exchangeQuantity.value} 件，请等待管理者审核。`);
       closeExchangeDialog();
       // 重新获取成长值和奖励列表
       await fetchGrowthScore();

@@ -22,8 +22,8 @@
           <option value="">全部角色</option>
           <option value="1">超级管理员</option>
           <option value="2">管理员</option>
-          <option value="3">导师</option>
-          <option value="4">学员</option>
+          <option value="3">管理者</option>
+          <option value="4">成员</option>
         </select>
         <select
           v-model="selectedStatus"
@@ -147,8 +147,8 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">角色</label>
             <select v-model="createForm.role_id" class="input w-full">
               <option value="2">管理员</option>
-              <option value="3">导师</option>
-              <option value="4">学员</option>
+              <option value="3">管理者</option>
+              <option value="4">成员</option>
             </select>
           </div>
           <div class="flex justify-end gap-2">

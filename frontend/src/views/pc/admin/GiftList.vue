@@ -17,11 +17,11 @@
           @input="handleSearch"
         />
         <select v-model="selectedTeacher" class="input w-48" @change="fetchGifts">
-          <option value="">全部导师</option>
+          <option value="">全部管理者</option>
           <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.real_name }}</option>
         </select>
         <select v-model="selectedClass" class="input w-48" @change="fetchGifts">
-          <option value="">全部班级</option>
+          <option value="">全部组织</option>
           <option v-for="cls in classes" :key="cls.id" :value="cls.id">{{ cls.class_name }}</option>
         </select>
         <select v-model="selectedStatus" class="input w-32" @change="fetchGifts">
@@ -39,7 +39,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">礼品</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">所需成长值</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">库存</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建导师</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建管理者</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -170,7 +170,7 @@ const fetchTeachers = async () => {
     const data = (await request.get('/api/v1/admin/users', { params: { role_id: 3 } })) as { items: Teacher[] };
     teachers.value = data.items || [];
   } catch (error) {
-    console.error('获取导师列表失败:', error);
+    console.error('获取管理者列表失败:', error);
   }
 };
 
@@ -179,7 +179,7 @@ const fetchClasses = async () => {
     const data = (await request.get('/api/v1/admin/classes')) as { items: ClassInfo[] };
     classes.value = data.items || [];
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 

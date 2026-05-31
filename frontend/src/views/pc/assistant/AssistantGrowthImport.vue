@@ -10,8 +10,8 @@
     <div class="bg-white shadow rounded-lg p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">导入说明</h3>
       <ul class="list-disc pl-5 space-y-2 text-gray-600">
-        <li>请下载模板文件，按照模板格式填写学员成长值</li>
-        <li>模板中的学员信息必须与系统中的一致</li>
+        <li>请下载模板文件，按照模板格式填写成员成长值</li>
+        <li>模板中的成员信息必须与系统中的一致</li>
         <li>成长值可以为正数或负数</li>
         <li>导入后将自动创建成长记录</li>
       </ul>
@@ -19,10 +19,10 @@
       <div class="mt-6 space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            选择班级
+            选择组织
           </label>
           <select v-model="selectedClassId" class="input" required>
-            <option value="">选择班级</option>
+            <option value="">选择组织</option>
             <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
               {{ classItem.school_name }} {{ classItem.session }}级 {{ classItem.class_name }}班
             </option>
@@ -105,13 +105,13 @@ const selectedClassId = ref('');
 const file = ref<File | null>(null);
 const importResult = ref<any>(null);
 
-// 获取授权班级列表
+// 获取授权组织列表
 const fetchClasses = async () => {
   try {
     const data = await getUserAssistantClasses();
     classes.value = (data as any).items || [];
   } catch (error) {
-    console.error('获取授权班级失败:', error);
+    console.error('获取授权组织失败:', error);
     classes.value = [];
   }
 };
@@ -127,7 +127,7 @@ const handleFileChange = (event: Event) => {
 // 处理导入
 const handleImport = async () => {
   if (!selectedClassId.value || !file.value) {
-    alert('请选择班级和文件');
+    alert('请选择组织和文件');
     return;
   }
 

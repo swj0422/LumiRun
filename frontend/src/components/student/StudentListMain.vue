@@ -12,7 +12,7 @@
               activeTab !== 'students',
           }"
         >
-          学员列表
+          成员列表
         </button>
         <button
           @click="
@@ -28,17 +28,17 @@
               activeTab !== 'logs',
           }"
         >
-          学员日志
+          成员日志
         </button>
       </nav>
     </div>
 
-    <!-- 学员列表页签 -->
+    <!-- 成员列表页签 -->
     <div v-show="activeTab === 'students'" class="space-y-6">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">学员列表</h1>
+        <h1 class="text-2xl font-bold text-gray-900">成员列表</h1>
         <div class="flex space-x-2">
-          <button @click="openAddModal" class="btn-primary">添加学员</button>
+          <button @click="openAddModal" class="btn-primary">添加成员</button>
         </div>
       </div>
 
@@ -50,7 +50,7 @@
               v-model="searchKeyword"
               type="text"
               class="input w-full"
-              placeholder="搜索学员姓名"
+              placeholder="搜索成员姓名"
               @input="handleSearch"
             />
           </div>
@@ -79,7 +79,7 @@
             class="input w-48"
             @change="fetchStudents"
           >
-            <option value="">全部班级</option>
+            <option value="">全部组织</option>
             <option
               v-for="cls in classes"
               :key="cls.id"
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <!-- 学员列表 -->
+      <!-- 成员列表 -->
       <StudentTable
         :students="students"
         :total="totalStudents"
@@ -120,9 +120,9 @@
       />
     </div>
 
-    <!-- 学员日志页签 -->
+    <!-- 成员日志页签 -->
     <div v-show="activeTab === 'logs'" class="space-y-6">
-      <h1 class="text-2xl font-bold text-gray-900">学员日志</h1>
+      <h1 class="text-2xl font-bold text-gray-900">成员日志</h1>
       <StudentOperationLogs
         :logs="operationLogs"
         :total="operationLogTotal"
@@ -136,7 +136,7 @@
       />
     </div>
 
-    <!-- 学员详情弹窗 -->
+    <!-- 成员详情弹窗 -->
     <StudentForm
       v-if="showDetailModal"
       ref="studentFormRef"
@@ -155,7 +155,7 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
-              >学员</label
+              >成员</label
             >
             <div class="text-gray-700">{{ selectedStudent?.name_in_class }}</div>
           </div>
@@ -204,7 +204,7 @@
       </div>
     </div>
 
-    <!-- 学员操作日志详情弹窗 -->
+    <!-- 成员操作日志详情弹窗 -->
     <div
       v-if="showOperationLogDetailModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -285,13 +285,13 @@
       </div>
     </div>
 
-    <!-- 停用学员对话框 -->
+    <!-- 停用成员对话框 -->
     <div
       v-if="showStopDialog"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">停用学员</h3>
+        <h3 class="text-lg font-bold mb-4">停用成员</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
@@ -326,16 +326,16 @@
       </div>
     </div>
 
-    <!-- 启用学员对话框 -->
+    <!-- 启用成员对话框 -->
     <div
       v-if="showActivateDialog"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">启用学员</h3>
+        <h3 class="text-lg font-bold mb-4">启用成员</h3>
         <div class="space-y-4">
           <div>
-            <p class="text-gray-700">确定要启用此学员吗？</p>
+            <p class="text-gray-700">确定要启用此成员吗？</p>
           </div>
           <div class="flex justify-end space-x-3">
             <button
@@ -357,13 +357,13 @@
       </div>
     </div>
 
-    <!-- 解绑学员对话框 -->
+    <!-- 解绑成员对话框 -->
     <div
       v-if="showUnbindDialog"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">解绑学员</h3>
+        <h3 class="text-lg font-bold mb-4">解绑成员</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
@@ -398,16 +398,16 @@
       </div>
     </div>
 
-    <!-- 删除学员对话框 -->
+    <!-- 删除成员对话框 -->
     <div
       v-if="showDeleteDialog"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">删除学员</h3>
+        <h3 class="text-lg font-bold mb-4">删除成员</h3>
         <div class="space-y-4">
           <div>
-            <p class="text-gray-700 mb-4">确定要删除此学员吗？删除后学员将移出本班，学号释放可重新使用。</p>
+            <p class="text-gray-700 mb-4">确定要删除此成员吗？删除后成员将移出本班，学号释放可重新使用。</p>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >删除原因 <span class="text-red-500">*</span></label
             >
@@ -440,23 +440,23 @@
       </div>
     </div>
 
-    <!-- 添加学员弹窗 -->
+    <!-- 添加成员弹窗 -->
     <div
       v-if="showAddModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">添加学员</h3>
+        <h3 class="text-lg font-bold mb-4">添加成员</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
-              >选择班级 <span class="text-red-500">*</span></label
+              >选择组织 <span class="text-red-500">*</span></label
             >
             <select
               v-model="form.class_id"
               class="input w-full"
             >
-              <option value="">请选择班级</option>
+              <option value="">请选择组织</option>
               <option
                 v-for="cls in classes"
                 :key="cls.id"
@@ -485,7 +485,7 @@
               v-model="form.real_name"
               type="text"
               class="input w-full"
-              placeholder="请输入学员姓名"
+              placeholder="请输入成员姓名"
             />
           </div>
           <div class="flex justify-end space-x-3">
@@ -522,7 +522,7 @@ import StudentTable from './StudentTable.vue';
 import StudentOperationLogs from './StudentOperationLogs.vue';
 import StudentForm from './StudentForm.vue';
 
-// 学员表单组件引用
+// 成员表单组件引用
 const studentFormRef = ref<InstanceType<typeof StudentForm> | null>(null);
 
 interface Student {
@@ -563,7 +563,7 @@ const growthForm = ref({
   reason: '',
 });
 
-// 添加学员和批量导入相关状态
+// 添加成员和批量导入相关状态
 const showAddModal = ref(false);
 const editingStudent = ref<any>(null);
 const addMode = ref('single'); // 'single' 或 'batch'
@@ -582,7 +582,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const uploadedFile = ref<File | null>(null);
 const uploadedFileName = ref('');
 
-// 学员详情弹窗相关状态
+// 成员详情弹窗相关状态
 const showDetailModal = ref(false);
 const selectedStudentDetail = ref<Student | null>(null);
 const showStopDialog = ref(false);
@@ -604,7 +604,7 @@ const originalStudentNote = ref({
   performance_summary: '',
 });
 
-// 学员标签相关状态
+// 成员标签相关状态
 const studentTags = ref<any[]>([]);
 const selectedTags = ref<number[]>([]);
 const originalSelectedTags = ref<number[]>([]);
@@ -613,14 +613,14 @@ const availableStudentTags = ref<any[]>([]);
 // 页签状态
 const activeTab = ref('students');
 
-// 学员日志相关状态
+// 成员日志相关状态
 const studentLogs = ref<any[]>([]);
 const logTotal = ref(0);
 const logSkip = ref(0);
 const logSearchKeyword = ref('');
 const selectedLogModule = ref('');
 
-// 学员操作日志相关状态
+// 成员操作日志相关状态
 const operationLogs = ref<any[]>([]);
 const operationLogTotal = ref(0);
 const operationLogSkip = ref(0);
@@ -643,12 +643,12 @@ const totalStudents = ref(0);
 // 用户存储
 const userStore = useUserStore();
 
-// 计算唯一班级列表
+// 计算唯一组织列表
 const uniqueClasses = computed(() => {
   const classSet = new Set<string>();
   const unique: { class_name: string }[] = [];
 
-  // 从 classes 中提取班级名称，确保没有学员的班级也能显示
+  // 从 classes 中提取组织名称，确保没有成员的组织也能显示
   classes.value.forEach((cls) => {
     if (cls.class_name && !classSet.has(cls.class_name)) {
       classSet.add(cls.class_name);
@@ -681,12 +681,12 @@ const sessions = computed(() => {
   return Array.from(sessionSet).sort().reverse();
 });
 
-// 获取班级列表
+// 获取组织列表
 const fetchClasses = async () => {
   try {
-    console.log('开始获取班级列表');
+    console.log('开始获取组织列表');
     const response = await request.get('/api/v1/classes/');
-    console.log('班级列表响应:', response);
+    console.log('组织列表响应:', response);
     if (response && response.items) {
       // 响应是对象，使用items字段
       classes.value = response.items;
@@ -700,18 +700,18 @@ const fetchClasses = async () => {
       // 其他情况，设置为空数组
       classes.value = [];
     }
-    console.log('班级数据更新成功:', classes.value);
+    console.log('组织数据更新成功:', classes.value);
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
     // 出错时，设置为空数组
     classes.value = [];
   }
 };
 
-// 获取学员列表
+// 获取成员列表
 const fetchStudents = async () => {
     try {
-      console.log('开始获取学员列表');
+      console.log('开始获取成员列表');
       // 构建参数，只包含非空值
       const params: any = {
         skip: (currentPage.value - 1) * pageSize.value,
@@ -739,12 +739,12 @@ const fetchStudents = async () => {
         params.session = selectedSession.value;
       }
       
-      console.log('学员列表请求参数:', params);
+      console.log('成员列表请求参数:', params);
       console.log('请求地址:', '/api/v1/students/teacher-students');
       const response = await request.get('/api/v1/students/teacher-students', {
         params,
       });
-      console.log('学员列表响应:', response);
+      console.log('成员列表响应:', response);
       console.log('响应类型:', typeof response);
       console.log('响应是否是对象:', typeof response === 'object' && response !== null);
       console.log('响应是否包含items字段:', response && 'items' in response);
@@ -753,13 +753,13 @@ const fetchStudents = async () => {
         // 响应是对象，使用items字段
         students.value = response.items;
         totalStudents.value = response.total || 0;
-        console.log('学员数据更新成功（对象格式）:', students.value);
-        console.log('学员数量:', students.value.length);
-        console.log('总学员数:', totalStudents.value);
-        // 检查第一个学员的结构
+        console.log('成员数据更新成功（对象格式）:', students.value);
+        console.log('成员数量:', students.value.length);
+        console.log('总成员数:', totalStudents.value);
+        // 检查第一个成员的结构
         if (students.value.length > 0) {
-          console.log('第一个学员数据:', students.value[0]);
-          console.log('第一个学员姓名字段:', students.value[0].name_in_class);
+          console.log('第一个成员数据:', students.value[0]);
+          console.log('第一个成员姓名字段:', students.value[0].name_in_class);
         }
       } else if (response && 'code' in response && response.code === 200 && 'data' in response) {
         // 响应是ApiResponse格式，使用data字段
@@ -770,31 +770,31 @@ const fetchStudents = async () => {
           students.value = response.data;
           totalStudents.value = response.data.length || 0;
         }
-        console.log('学员数据更新成功（ApiResponse格式）:', students.value);
-        console.log('学员数量:', students.value.length);
-        console.log('总学员数:', totalStudents.value);
+        console.log('成员数据更新成功（ApiResponse格式）:', students.value);
+        console.log('成员数量:', students.value.length);
+        console.log('总成员数:', totalStudents.value);
       } else if (Array.isArray(response)) {
         // 响应是数组，直接使用
         students.value = response;
         totalStudents.value = response.length || 0;
-        console.log('学员数据更新成功（数组格式）:', students.value);
-        console.log('学员数量:', students.value.length);
-        console.log('总学员数:', totalStudents.value);
+        console.log('成员数据更新成功（数组格式）:', students.value);
+        console.log('成员数量:', students.value.length);
+        console.log('总成员数:', totalStudents.value);
       } else {
         console.error('响应格式不正确:', response);
         students.value = [];
         totalStudents.value = 0;
-        console.log('学员数据设置为空数组');
+        console.log('成员数据设置为空数组');
       }
     } catch (error) {
-      console.error('获取学员列表失败:', error);
+      console.error('获取成员列表失败:', error);
       students.value = [];
       totalStudents.value = 0;
-      console.log('学员数据设置为空数组');
+      console.log('成员数据设置为空数组');
     }
   };
 
-// 搜索学员
+// 搜索成员
 const handleSearch = () => {
   currentPage.value = 1;
   fetchStudents();
@@ -851,13 +851,13 @@ const addGrowthRecord = async () => {
   }
 };
 
-// 查看学员详情
+// 查看成员详情
 const viewStudentDetail = (student: Student) => {
   selectedStudentDetail.value = student;
   showDetailModal.value = true;
 };
 
-// 关闭学员详情弹窗
+// 关闭成员详情弹窗
 const closeDetailModal = () => {
   showDetailModal.value = false;
   selectedStudentDetail.value = null;
@@ -866,12 +866,12 @@ const closeDetailModal = () => {
   form.value.deleteReason = '';
 };
 
-// 保存学员详情
+// 保存成员详情
 const saveStudentDetail = async () => {
-  console.log('开始保存学员详情');
+  console.log('开始保存成员详情');
   console.log('selectedStudentDetail:', selectedStudentDetail);
   if (!selectedStudentDetail.value || !selectedStudentDetail.value.id) {
-    console.error('学员详情或ID不存在');
+    console.error('成员详情或ID不存在');
     return;
   }
 
@@ -886,7 +886,7 @@ const saveStudentDetail = async () => {
     const tagsChanged = JSON.stringify(selectedTags.sort()) !== JSON.stringify(originalSelectedTags.sort());
     if (tagsChanged) {
       // 保存标签
-      console.log('开始保存标签，学员ID:', selectedStudentDetail.value.id);
+      console.log('开始保存标签，成员ID:', selectedStudentDetail.value.id);
       const tagResponse = await request.post(`/api/v1/students/tags/${selectedStudentDetail.value.id}`, {
         tag_ids: selectedTags
       });
@@ -895,7 +895,7 @@ const saveStudentDetail = async () => {
       console.log('标签未变化，跳过保存');
     }
 
-    // 保存学员信息
+    // 保存成员信息
     const formData = studentFormRef.value?.getForm() || {};
     const realName = (formData as any).real_name;
     // 只有当姓名实际改变时才调用更新接口
@@ -907,10 +907,10 @@ const saveStudentDetail = async () => {
       console.log('姓名未变化，跳过保存');
     }
 
-    // 保存学员备注
+    // 保存成员备注
     const studentNote = studentFormRef.value?.getStudentNote() || {};
     const originalStudentNote = studentFormRef.value?.getOriginalStudentNote() || {};
-    console.log('学员备注:', studentNote);
+    console.log('成员备注:', studentNote);
     console.log('原始备注:', originalStudentNote);
 
     // 构建备注数据，包含标签
@@ -924,7 +924,7 @@ const saveStudentDetail = async () => {
     const noteTagsChanged = JSON.stringify(selectedTags.sort()) !== JSON.stringify(originalSelectedTags.sort());
     const noteFieldsChanged = JSON.stringify(studentNote) !== JSON.stringify(originalStudentNote);
     if (noteTagsChanged || noteFieldsChanged) {
-      console.log('开始保存备注，学员ID:', selectedStudentDetail.value.id);
+      console.log('开始保存备注，成员ID:', selectedStudentDetail.value.id);
       const noteResponse = await request.post(`/api/v1/students/note/${selectedStudentDetail.value.id}`, noteData);
       console.log('保存备注成功，响应:', noteResponse);
     } else {
@@ -935,9 +935,9 @@ const saveStudentDetail = async () => {
     fetchStudents();
     // 总是刷新日志列表，确保最新的变更显示
     fetchStudentOperationLogs();
-    console.log('保存学员详情完成');
+    console.log('保存成员详情完成');
   } catch (error) {
-    console.error('保存学员详情失败:', error);
+    console.error('保存成员详情失败:', error);
     alert('保存失败，请稍后重试');
   }
 };
@@ -948,31 +948,31 @@ const toggleActionMenu = (studentId: number) => {
     activeActionMenu.value === studentId ? undefined : studentId;
 };
 
-// 处理停用学员
+// 处理停用成员
 const handleStopStudent = (student: Student) => {
   selectedStudentDetail.value = student;
   showStopDialog.value = true;
 };
 
-// 处理启用学员
+// 处理启用成员
 const handleActivateStudent = (student: Student) => {
   selectedStudentDetail.value = student;
   showActivateDialog.value = true;
 };
 
-// 处理解绑学员
+// 处理解绑成员
 const handleUnbindStudent = (student: Student) => {
   selectedStudentDetail.value = student;
   showUnbindDialog.value = true;
 };
 
-// 处理删除学员
+// 处理删除成员
 const handleDeleteStudent = (student: Student) => {
   selectedStudentDetail.value = student;
   showDeleteDialog.value = true;
 };
 
-// 停用学员
+// 停用成员
 const stopStudent = async (student: Student | null) => {
   if (!student || !form.value.stopReason) return;
 
@@ -984,11 +984,11 @@ const stopStudent = async (student: Student | null) => {
     form.value.stopReason = '';
     fetchStudents();
   } catch (error) {
-    console.error('停用学员失败:', error);
+    console.error('停用成员失败:', error);
   }
 };
 
-// 启用学员
+// 启用成员
 const activateStudent = async (student: Student | null) => {
   if (!student) return;
 
@@ -997,11 +997,11 @@ const activateStudent = async (student: Student | null) => {
     showActivateDialog.value = false;
     fetchStudents();
   } catch (error) {
-    console.error('启用学员失败:', error);
+    console.error('启用成员失败:', error);
   }
 };
 
-// 解绑学员
+// 解绑成员
 const unbindStudent = async (student: Student | null) => {
   if (!student || !form.value.unbindReason) return;
 
@@ -1013,11 +1013,11 @@ const unbindStudent = async (student: Student | null) => {
     form.value.unbindReason = '';
     fetchStudents();
   } catch (error) {
-    console.error('解绑学员失败:', error);
+    console.error('解绑成员失败:', error);
   }
 };
 
-// 删除学员
+// 删除成员
 const deleteStudent = async (student: Student | null) => {
   if (!student || !form.value.deleteReason) return;
 
@@ -1029,14 +1029,14 @@ const deleteStudent = async (student: Student | null) => {
     form.value.deleteReason = '';
     fetchStudents();
   } catch (error) {
-    console.error('删除学员失败:', error);
+    console.error('删除成员失败:', error);
   }
 };
 
-// 获取学员操作日志
+// 获取成员操作日志
 const fetchStudentOperationLogs = async () => {
   try {
-    console.log('开始获取学员操作日志');
+    console.log('开始获取成员操作日志');
     // 构建参数，只包含非空值
     const params: any = {
       skip: operationLogSkip.value,
@@ -1056,23 +1056,23 @@ const fetchStudentOperationLogs = async () => {
     const response = await request.get('/api/v1/student-operation-logs/', {
       params,
     });
-    console.log('学员操作日志响应:', response);
+    console.log('成员操作日志响应:', response);
     // 检查响应数据格式
     if (Array.isArray(response)) {
       // 响应是数组，直接使用
       operationLogs.value = response;
       operationLogTotal.value = response.length;
-      console.log('学员操作日志数据更新成功（数组格式）:', operationLogs.value);
+      console.log('成员操作日志数据更新成功（数组格式）:', operationLogs.value);
     } else if (response && response.items) {
       // 响应是对象，使用items字段
       operationLogs.value = response.items;
       operationLogTotal.value = response.total || 0;
-      console.log('学员操作日志数据更新成功（对象格式）:', operationLogs.value);
+      console.log('成员操作日志数据更新成功（对象格式）:', operationLogs.value);
     } else {
       console.error('响应格式不正确:', response);
     }
   } catch (error) {
-    console.error('获取学员操作日志失败:', error);
+    console.error('获取成员操作日志失败:', error);
   }
 };
 
@@ -1082,12 +1082,12 @@ const viewOperationLogDetail = (log: any) => {
   showOperationLogDetailModal.value = true;
 };
 
-// 打开添加学员弹窗
+// 打开添加成员弹窗
 const openAddModal = () => {
   showAddModal.value = true;
 };
 
-// 添加学员
+// 添加成员
 const addStudent = async () => {
   if (!form.value.class_id || !form.value.student_no || !form.value.real_name) return;
 
@@ -1103,7 +1103,7 @@ const addStudent = async () => {
     form.value.real_name = '';
     fetchStudents();
   } catch (error) {
-    console.error('添加学员失败:', error);
+    console.error('添加成员失败:', error);
   }
 };
 
@@ -1111,12 +1111,12 @@ const addStudent = async () => {
 onMounted(async () => {
   console.log('开始初始化数据');
   await fetchClasses();
-  console.log('班级数据获取完成:', classes.value);
-  console.log('班级数量:', classes.value.length);
+  console.log('组织数据获取完成:', classes.value);
+  console.log('组织数量:', classes.value.length);
   await fetchStudents();
-  console.log('学员数据获取完成:', students.value);
-  console.log('学员数量:', students.value.length);
-  console.log('总学员数:', totalStudents.value);
+  console.log('成员数据获取完成:', students.value);
+  console.log('成员数量:', students.value.length);
+  console.log('总成员数:', totalStudents.value);
   console.log('students 类型:', typeof students);
   console.log('students.value 类型:', typeof students.value);
   console.log('students.value 是否是数组:', Array.isArray(students.value));

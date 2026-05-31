@@ -45,7 +45,7 @@
             class="w-48 px-3 py-2 border border-gray-300 rounded-md"
             @change="fetchOrders"
           >
-            <option value="">全部班级</option>
+            <option value="">全部组织</option>
             <option v-for="cls in classes" :key="cls.id" :value="cls.id">
               {{ cls.class_name }}
             </option>
@@ -58,7 +58,7 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                学员
+                成员
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -68,7 +68,7 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                班级
+                组织
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -169,7 +169,7 @@
           class="w-48 px-3 py-2 border border-gray-300 rounded-md"
           @change="fetchCompletedOrders"
         >
-          <option value="">全部班级</option>
+          <option value="">全部组织</option>
           <option v-for="cls in classes" :key="cls.id" :value="cls.id">
             {{ cls.class_name }}
           </option>
@@ -182,7 +182,7 @@
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              学员
+              成员
             </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -192,7 +192,7 @@
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              班级
+              组织
             </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -305,12 +305,12 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">学员兑换奖励</h2>
+        <h2 class="text-xl font-bold mb-4">成员兑换奖励</h2>
         <form @submit.prevent="submitRedemption">
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                选择班级 <span class="text-red-500">*</span>
+                选择组织 <span class="text-red-500">*</span>
               </label>
               <select
                 v-model="redemptionForm.classId"
@@ -318,7 +318,7 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md"
                 @change="handleClassChange"
               >
-                <option value="">请选择班级</option>
+                <option value="">请选择组织</option>
                 <option v-for="cls in classes" :key="cls.id" :value="cls.id">
                   {{ cls.school_name }} - {{ cls.session }} -
                   {{ cls.class_name }}
@@ -411,7 +411,7 @@
               </label>
               <div class="text-xs text-gray-500 mb-1">
                 <span v-if="selectedGift && selectedStudent">
-                  库存: {{ selectedGift.stock }} | 学员可用积分:
+                  库存: {{ selectedGift.stock }} | 成员可用积分:
                   {{ selectedStudent.available_score }} | 所需积分:
                   {{ selectedGift.price * redemptionForm.quantity }} |
                   最多可兑换: {{ getMaxQuantity() }} 份
@@ -600,7 +600,7 @@ const fetchClasses = async () => {
     }
   } catch (error) {
     classes.value = [];
-    console.log('获取班级列表失败，显示空列表');
+    console.log('获取组织列表失败，显示空列表');
   }
 };
 
@@ -815,11 +815,11 @@ const handleClassChange = async () => {
   }
 
   try {
-    console.log('开始获取班级学生和奖励');
+    console.log('开始获取组织学生和奖励');
     const classId = parseInt(redemptionForm.value.classId as string);
     console.log('转换后的 classId:', classId);
 
-    // 获取班级学生列表
+    // 获取组织学生列表
     const data = (await request.get(`/api/v1/classes/${classId}/students`)) as {
       items: Student[];
     };
@@ -835,7 +835,7 @@ const handleClassChange = async () => {
     }
     redemptionForm.value.studentId = '';
 
-    // 获取班级可用的奖励列表
+    // 获取组织可用的奖励列表
     console.log('请求礼品列表接口:', `/v1/gifts/class/${classId}`);
     const giftData = (await request.get(`/api/v1/gifts/class/${classId}`)) as {
       items: Gift[];
@@ -846,7 +846,7 @@ const handleClassChange = async () => {
     console.log('礼品数量:', availableGifts.value.length);
     redemptionForm.value.giftId = '';
   } catch (error) {
-    console.error('获取班级学生失败:', error);
+    console.error('获取组织学生失败:', error);
     students.value = [];
     availableGifts.value = [];
   }
@@ -951,9 +951,9 @@ const submitRedemption = async () => {
     console.log('开始兑换，表单数据:', redemptionForm.value);
     console.log('students.value:', students.value);
 
-    // 检查是否选择了班级
+    // 检查是否选择了组织
     if (!redemptionForm.value.classId) {
-      alert('请选择班级');
+      alert('请选择组织');
       return;
     }
 
@@ -1028,7 +1028,7 @@ const submitRedemption = async () => {
     }
 
     if (!redemptionForm.value.classId || isNaN(classId)) {
-      alert('班级选择错误，请重新选择');
+      alert('组织选择错误，请重新选择');
       return;
     }
 

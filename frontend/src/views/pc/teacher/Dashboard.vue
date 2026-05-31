@@ -11,7 +11,7 @@
       </div>
 
       <!-- 统计卡片 -->
-      <!-- 第一行：我的班级、学员总数、奖励总数 -->
+      <!-- 第一行：我的组织、成员总数、奖励总数 -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <router-link
           to="/teacher/classes"
@@ -36,7 +36,7 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">我的班级</p>
+              <p class="text-sm font-medium text-gray-500">我的组织</p>
               <p class="text-2xl font-bold text-gray-900">
                 {{ stats.classCount }}
               </p>
@@ -67,7 +67,7 @@
               </svg>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">学员总数</p>
+              <p class="text-sm font-medium text-gray-500">成员总数</p>
               <p class="text-2xl font-bold text-gray-900">
                 {{ stats.studentCount }}
               </p>
@@ -215,7 +215,7 @@
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <span class="text-sm font-medium">创建班级</span>
+            <span class="text-sm font-medium">创建组织</span>
           </router-link>
 
           <router-link

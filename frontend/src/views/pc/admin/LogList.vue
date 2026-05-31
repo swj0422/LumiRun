@@ -20,7 +20,7 @@
         :class="activeTab === 'student' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
         class="px-6 py-2 rounded-lg text-sm font-medium shadow"
       >
-        学员操作日志
+        成员操作日志
       </button>
       <button
         @click="activeTab = 'growth'"

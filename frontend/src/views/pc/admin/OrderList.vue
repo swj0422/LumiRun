@@ -7,7 +7,7 @@
     <div class="bg-white rounded-lg shadow p-4">
       <div class="flex flex-wrap gap-4">
         <select v-model="selectedClass" class="input w-48" @change="fetchOrders">
-          <option value="">全部班级</option>
+          <option value="">全部组织</option>
           <option v-for="cls in classes" :key="cls.id" :value="cls.id">{{ cls.class_name }}</option>
         </select>
         <select v-model="selectedStatus" class="input w-32" @change="fetchOrders">
@@ -36,8 +36,8 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">学员</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">班级</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">成员</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">组织</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">礼品名称</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">消耗积分</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
@@ -82,7 +82,7 @@
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <h2 class="text-xl font-bold mb-4">取消订单确认</h2>
         <div class="space-y-4">
-          <p class="text-gray-600">确定要取消该订单吗？取消后将返还 <span class="font-bold text-primary-600">{{ selectedOrder?.points_cost }}</span> 成长值给学员。</p>
+          <p class="text-gray-600">确定要取消该订单吗？取消后将返还 <span class="font-bold text-primary-600">{{ selectedOrder?.points_cost }}</span> 成长值给成员。</p>
           <div class="flex justify-end gap-2">
             <button @click="showCancelModal = false" class="btn-secondary">取消</button>
             <button @click="confirmCancel" class="btn-primary">确认取消</button>
@@ -141,7 +141,7 @@ const fetchClasses = async () => {
     const data = (await request.get('/api/v1/admin/classes')) as { items: ClassInfo[] };
     classes.value = data.items || [];
   } catch (error) {
-    console.error('获取班级列表失败:', error);
+    console.error('获取组织列表失败:', error);
   }
 };
 

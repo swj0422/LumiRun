@@ -8,7 +8,7 @@
             v-model="localSearchKeyword"
             type="text"
             class="input w-full"
-            placeholder="搜索学员姓名"
+            placeholder="搜索成员姓名"
             @input="handleSearch"
           />
         </div>
@@ -76,7 +76,7 @@
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              学员姓名
+              成员姓名
             </th>
             <th
               scope="col"

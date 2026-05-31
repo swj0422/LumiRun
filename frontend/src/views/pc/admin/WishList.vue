@@ -271,7 +271,7 @@
             <span class="font-medium">{{ publisherInfo.role_name || '-' }}</span>
           </div>
           <div class="flex justify-between py-2 border-b border-gray-100">
-            <span class="text-gray-500">班级</span>
+            <span class="text-gray-500">组织</span>
             <span class="font-medium">{{ publisherInfo.class_name || '-' }}</span>
           </div>
           <div class="flex justify-between py-2">
