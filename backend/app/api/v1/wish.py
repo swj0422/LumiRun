@@ -25,11 +25,14 @@ class WishCreate(BaseModel):
 class WishResponse(BaseModel):
     id: int
     user_id: int
-    user_name: Optional[str]
-    content: str
-    image_url: Optional[str]
-    is_anonymous: int
-    created_at: datetime
+    user_name: Optional[str] = None
+    content: str = ""
+    image_url: Optional[str] = None
+    is_anonymous: int = 0
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
 
 
 @router.post("/", response_model=WishResponse)
@@ -43,7 +46,15 @@ async def create_wish(
     db: AsyncSession = Depends(get_db)
 ):
     """创建心愿便利贴"""
-    # 处理图片上传（取第一张）
+    if not title or not title.strip():
+        raise HTTPException(status_code=400, detail="标题不能为空")
+
+    if len(title) > 50:
+        raise HTTPException(status_code=400, detail="标题不能超过50字")
+
+    if description and len(description) > 150:
+        raise HTTPException(status_code=400, detail="描述不能超过150字")
+
     image_url = None
     if images and len(images) > 0:
         image = images[0]
@@ -58,15 +69,16 @@ async def create_wish(
 
             image_url = f"/uploads/wishes/{filename}"
 
-    # 处理 is_anonymous
     is_anon = 0
-    if is_anonymous and is_anonymous not in ["0", "false", ""]:
+    if is_anonymous and str(is_anonymous) not in ["0", "false", ""]:
         is_anon = 1
 
-    # 使用 title 作为 content
-    content = title
+    content = title.strip()
     if description:
-        content = f"{title}\n{description}"
+        content = f"{title.strip()}\n{description.strip()}"
+
+    if len(content) > 200:
+        raise HTTPException(status_code=400, detail="心愿内容不能超过200字")
 
     wish = await WishService.create_wish(
         db=db,
@@ -79,10 +91,10 @@ async def create_wish(
     return WishResponse(
         id=wish.id,
         user_id=wish.user_id,
-        user_name=None if wish.is_anonymous else current_user.real_name,
-        content=wish.content,
+        user_name=None if wish.is_anonymous else (current_user.real_name or "未知用户"),
+        content=wish.content or "",
         image_url=wish.image_url,
-        is_anonymous=wish.is_anonymous,
+        is_anonymous=wish.is_anonymous or 0,
         created_at=wish.created_at
     )
 
@@ -95,11 +107,12 @@ async def get_my_wishes(
     page_size: int = Query(20, ge=1, le=100)
 ):
     """获取我的心愿列表"""
+    skip = (page - 1) * page_size
     wishes, total = await WishService.get_user_wishes(
         db=db,
         user_id=current_user.id,
-        page=page,
-        page_size=page_size
+        skip=skip,
+        limit=page_size
     )
 
     return {
@@ -107,10 +120,10 @@ async def get_my_wishes(
             WishResponse(
                 id=w.id,
                 user_id=w.user_id,
-                user_name=None if w.is_anonymous else current_user.real_name,
-                content=w.content,
+                user_name=None if w.is_anonymous else (current_user.real_name or "未知用户"),
+                content=w.content or "",
                 image_url=w.image_url,
-                is_anonymous=w.is_anonymous,
+                is_anonymous=w.is_anonymous or 0,
                 created_at=w.created_at
             ) for w in wishes
         ],
@@ -127,10 +140,11 @@ async def get_public_wishes(
     page_size: int = Query(20, ge=1, le=100)
 ):
     """获取公开心愿列表"""
+    skip = (page - 1) * page_size
     wishes, total = await WishService.get_public_wishes(
         db=db,
-        page=page,
-        page_size=page_size
+        skip=skip,
+        limit=page_size
     )
 
     return {
@@ -138,10 +152,10 @@ async def get_public_wishes(
             WishResponse(
                 id=w.id,
                 user_id=w.user_id,
-                user_name=None if w.is_anonymous else w.user.real_name if w.user else None,
-                content=w.content,
+                user_name=None if w.is_anonymous else (w.user.real_name if w.user else "未知用户"),
+                content=w.content or "",
                 image_url=w.image_url,
-                is_anonymous=w.is_anonymous,
+                is_anonymous=w.is_anonymous or 0,
                 created_at=w.created_at
             ) for w in wishes
         ],
@@ -162,18 +176,15 @@ async def update_wish(
     db: AsyncSession = Depends(get_db)
 ):
     """更新心愿"""
-    # 获取心愿
     result = await db.execute(select(Wish).where(Wish.id == wish_id))
     wish = result.scalar_one_or_none()
 
     if not wish:
         raise HTTPException(status_code=404, detail="心愿不存在")
 
-    # 检查权限
     if wish.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="无权限修改此心愿")
 
-    # 处理图片上传（取第一张）
     image_url = wish.image_url
     if images and len(images) > 0:
         image = images[0]
@@ -188,17 +199,23 @@ async def update_wish(
 
             image_url = f"/uploads/wishes/{filename}"
 
-    # 处理 is_anonymous
-    is_anon = 0
-    if is_anonymous and is_anonymous not in ["0", "false", ""]:
-        is_anon = 1
+    is_anon = wish.is_anonymous
+    if is_anonymous is not None:
+        if str(is_anonymous) not in ["0", "false", ""]:
+            is_anon = 1
+        else:
+            is_anon = 0
 
-    # 更新内容
-    content = title
-    if description:
-        content = f"{title}\n{description}"
-    elif wish.content:
-        content = wish.content
+    content = wish.content
+    if title:
+        content = title.strip()
+        if description:
+            content = f"{title.strip()}\n{description.strip()}"
+    elif description:
+        content = f"{wish.content}\n{description.strip()}" if wish.content else description.strip()
+
+    if len(content) > 200:
+        raise HTTPException(status_code=400, detail="心愿内容不能超过200字")
 
     updated_wish = await WishService.update_wish(
         db=db,
@@ -211,10 +228,10 @@ async def update_wish(
     return WishResponse(
         id=updated_wish.id,
         user_id=updated_wish.user_id,
-        user_name=None if updated_wish.is_anonymous else current_user.real_name,
-        content=updated_wish.content,
+        user_name=None if updated_wish.is_anonymous else (current_user.real_name or "未知用户"),
+        content=updated_wish.content or "",
         image_url=updated_wish.image_url,
-        is_anonymous=updated_wish.is_anonymous,
+        is_anonymous=updated_wish.is_anonymous or 0,
         created_at=updated_wish.created_at
     )
 
@@ -226,14 +243,12 @@ async def delete_wish(
     db: AsyncSession = Depends(get_db)
 ):
     """删除心愿"""
-    # 获取心愿
     result = await db.execute(select(Wish).where(Wish.id == wish_id))
     wish = result.scalar_one_or_none()
 
     if not wish:
         raise HTTPException(status_code=404, detail="心愿不存在")
 
-    # 检查权限（自己的或者管理员）
     if wish.user_id != current_user.id and current_user.role_id not in [1, 2]:
         raise HTTPException(status_code=403, detail="无权限删除此心愿")
 
@@ -249,7 +264,6 @@ async def admin_delete_wish(
     db: AsyncSession = Depends(get_db)
 ):
     """管理员删除任意心愿"""
-    # 获取心愿
     result = await db.execute(select(Wish).where(Wish.id == wish_id))
     wish = result.scalar_one_or_none()
 
