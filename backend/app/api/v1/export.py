@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import get_current_user, require_manager, require_admin
+from app.core.security import get_current_user, require_teacher, require_admin
 from app.models.user import User
 from app.services.export_service import ExportService
 
@@ -16,7 +16,7 @@ async def export_growth_records(
     class_id: Optional[int] = Query(None),
     start_time: Optional[datetime] = Query(None),
     end_time: Optional[datetime] = Query(None),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """导出成长值流水记录"""
@@ -46,7 +46,7 @@ async def export_growth_records(
 @router.get("/class-students")
 async def export_class_students(
     class_id: Optional[int] = Query(None),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """导出学员-班级绑定记录"""
@@ -77,7 +77,7 @@ async def export_gift_orders(
     status: Optional[int] = Query(None),
     start_time: Optional[datetime] = Query(None),
     end_time: Optional[datetime] = Query(None),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """导出奖励兑换订单"""

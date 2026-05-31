@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
 from typing import Optional, List, Union, Dict, Any
 from app.core.database import get_db
-from app.core.security import get_current_user, require_manager
+from app.core.security import get_current_user, require_teacher
 from app.models.gift import Gift
 from app.models.gift_stock import GiftStock
 from app.models.gift_class_relation import GiftClassRelation as GiftClass
@@ -48,7 +48,7 @@ async def create_gift(
     stock: str = Form(...),
     status: str = Form("1"),
     images: Optional[List[UploadFile]] = File(None),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """创建礼品"""
@@ -145,7 +145,7 @@ async def get_gifts(
     gift_status: Optional[int] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """获取礼品列表"""
@@ -210,7 +210,7 @@ async def get_gifts(
 @router.get("/{gift_id}")
 async def get_gift(
     gift_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """获取礼品详情"""
@@ -247,7 +247,7 @@ async def get_gift(
 async def update_gift(
     request: Request,
     gift_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """更新礼品"""
@@ -445,7 +445,7 @@ async def update_gift(
 @router.delete("/{gift_id}")
 async def delete_gift(
     gift_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """删除礼品"""
@@ -484,7 +484,7 @@ class GiftClassCreate(BaseModel):
 @router.post("/class")
 async def add_gift_class(
     gift_class_data: GiftClassCreate,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """添加礼品开放班级"""
@@ -549,7 +549,7 @@ async def add_gift_class(
 async def remove_gift_class(
     gift_id: int,
     class_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """移除礼品开放班级"""
@@ -601,7 +601,7 @@ async def remove_gift_class(
 @router.get("/{gift_id}/classes")
 async def get_gift_classes(
     gift_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """获取礼品开放的班级"""
@@ -648,7 +648,7 @@ async def get_gift_classes(
 @router.get("/class/{class_id}")
 async def get_gifts_by_class(
     class_id: int,
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """获取班级可用的礼品列表"""
@@ -715,7 +715,7 @@ async def get_gifts_by_class(
 @router.get("/inventory/warnings")
 async def get_stock_warnings(
     threshold: Optional[int] = Query(None, description="库存预警阈值"),
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """获取库存预警信息"""
@@ -740,7 +740,7 @@ async def get_stock_warnings(
 
 @router.post("/inventory/check")
 async def check_inventory(
-    current_user: User = Depends(require_manager),
+    current_user: User = Depends(require_teacher),
     db: AsyncSession = Depends(get_db)
 ):
     """检查库存预警"""
