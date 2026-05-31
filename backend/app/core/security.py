@@ -232,7 +232,9 @@ def require_role(*roles: str):
 # 常用角色依赖
 require_admin = require_role("super_admin", "admin")
 require_teacher = require_role("super_admin", "admin", "teacher", "class_assistant")
+require_manager = require_teacher  # 别名，兼容术语替换
 require_student = require_role("student")
+require_member = require_student  # 别名，兼容术语替换
 
 
 async def require_class_assistant(
