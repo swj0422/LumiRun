@@ -219,10 +219,10 @@ CREATE TABLE IF NOT EXISTS sys_log (
 
 -- 初始化角色数据
 INSERT INTO sys_role (id, role_name, remark) VALUES
-(1, 'super_admin', '系统最高权限，可管理所有功能'),
-(2, 'admin', '管理用户和日志，不可操作业务数据'),
-(3, 'manager', '管理组织、成员、成长值、奖励'),
-(4, 'member', '查看成长值、兑换奖励')
+(1, '超级管理员', '系统最高权限，可管理所有功能'),
+(2, '管理员', '管理用户和日志，不可操作业务数据'),
+(3, '导师', '管理班级、学员、成长值、奖励'),
+(4, '学员', '查看成长值、兑换奖励')
 ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
 
 -- 创建超级管理员账号

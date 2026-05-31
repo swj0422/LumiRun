@@ -60,8 +60,8 @@ echo ==============================================
 echo.
 echo Default Accounts:
 echo admin@example.com / admin / Password123
-echo teacher@example.com / teacher / Password123
-echo student@example.com / student / Password123
+echo manager@example.com / manager / Password123
+echo member@example.com / member / Password123
 echo.
 echo Security: Please change default passwords after first login!
 echo.

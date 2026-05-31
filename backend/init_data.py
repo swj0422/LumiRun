@@ -13,8 +13,8 @@ async def init_roles(conn):
     roles = [
         {"id": 1, "role_name": "super_admin", "remark": "系统最高权限，可管理所有功能"},
         {"id": 2, "role_name": "admin", "remark": "管理用户和日志，不可操作业务数据"},
-        {"id": 3, "role_name": "manager", "remark": "管理组织、成员、成长值、奖励"},
-        {"id": 4, "role_name": "member", "remark": "查看成长值、兑换奖励"}
+        {"id": 3, "role_name": "teacher", "remark": "管理班级、学员、成长值、奖励"},
+        {"id": 4, "role_name": "student", "remark": "查看成长值、兑换奖励"}
     ]
     
     for role in roles:
@@ -230,8 +230,8 @@ async def init_all_data():
         print("")
         print("默认账号信息：")
         print("admin@example.com / admin / Password123 (超级管理员)")
-        print("teacher@example.com / teacher / Password123 (导师)")
-        print("student@example.com / student / Password123 (学员)")
+        print("manager@example.com / manager / Password123 (管理者)")
+        print("member@example.com / member / Password123 (成员)")
         print("")
         print("Security: 首次登录后请立即修改默认密码！")
             

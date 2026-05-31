@@ -167,8 +167,8 @@ npm run dev
 | 邮箱 | 用户名 | 密码 | 角色 |
 | --- | --- | --- | --- |
 | admin@example.com | admin | Password123 | 超级管理员 |
-| teacher@example.com | teacher | Password123 | 导师 |
-| student@example.com | student | Password123 | 学员 |
+| manager@example.com | manager | Password123 | 管理者 |
+| member@example.com | member | Password123 | 成员 |
 
 **角色权限说明**：
 - **超级管理员**：拥有系统所有权限，包括用户管理、角色管理、权限管理、系统设置等

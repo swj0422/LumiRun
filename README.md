@@ -87,7 +87,7 @@ chmod +x deploy.sh
 | --- | --- | --- | --- |
 | admin@example.com | admin | Password123 | 超级管理员 |
 | manager@example.com | manager | Password123 | 管理者 |
-| student@example.com | student | Password123 | 成员 |
+| member@example.com | member | Password123 | 成员 |
 
 **安全提示**：⚠️ 首次登录后请立即修改默认密码！
 

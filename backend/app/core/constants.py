@@ -1,21 +1,13 @@
 class RoleConstants:
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
-    MANAGER = "manager"
-    GROUP_ASSISTANT = "group_assistant"
-    MEMBER = "member"
+    TEACHER = "teacher"
+    CLASS_ASSISTANT = "class_assistant"
+    STUDENT = "student"
 
     ADMIN_ROLES = [SUPER_ADMIN, ADMIN]
-    MANAGER_ROLES = [SUPER_ADMIN, ADMIN, MANAGER, GROUP_ASSISTANT]
-    ALL_ROLES = [SUPER_ADMIN, ADMIN, MANAGER, GROUP_ASSISTANT, MEMBER]
-
-    @staticmethod
-    def get_teacher_alias():
-        return RoleConstants.MANAGER
-
-    @staticmethod
-    def get_class_assistant_alias():
-        return RoleConstants.GROUP_ASSISTANT
+    TEACHER_ROLES = [SUPER_ADMIN, ADMIN, TEACHER, CLASS_ASSISTANT]
+    ALL_ROLES = [SUPER_ADMIN, ADMIN, TEACHER, CLASS_ASSISTANT, STUDENT]
 
 
 class LogConstants:
