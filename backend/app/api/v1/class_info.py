@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher, require_admin
+from app.core.security import get_current_user, require_manager, require_admin
 from app.schemas.class_info import ClassCreate, ClassUpdate, ClassStatusUpdate
 from app.services.class_service import ClassService
 from app.models.user import User
@@ -194,7 +194,7 @@ async def get_class(
 @router.post("/", response_model=dict)
 async def create_class(
     class_data: ClassCreate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """创建班级（导师）"""
@@ -216,7 +216,7 @@ async def create_class(
 async def update_class(
     class_id: int,
     class_data: ClassUpdate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """更新班级（仅名称）"""
@@ -252,7 +252,7 @@ async def update_class(
 async def update_class_status(
     class_id: int,
     status_data: ClassStatusUpdate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """更新班级状态（关闭/开放）"""
@@ -289,7 +289,7 @@ async def update_class_status(
 @router.delete("/{class_id}", response_model=dict)
 async def delete_class(
     class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """删除班级（仅当无绑定学员时）"""

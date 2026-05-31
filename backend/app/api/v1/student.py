@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher
+from app.core.security import get_current_user, require_manager
 from app.schemas.student_class import StudentBind, StudentClassResponse, StudentSimpleResponse
 from app.services.student_service import StudentService
 from app.services.student_operation_log_service import StudentOperationLogService
@@ -132,7 +132,7 @@ async def bind_class(
 async def approve_bind(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """同意绑定申请"""
@@ -213,7 +213,7 @@ async def approve_bind(
 
 @router.get("/bind/pending", response_model=List[dict])
 async def get_pending_binds(
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取当前导师班级的待审核绑定申请"""
@@ -268,7 +268,7 @@ async def get_pending_binds(
 async def reject_bind(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """拒绝绑定申请"""
@@ -333,7 +333,7 @@ async def reject_bind(
 async def add_student(
     request: Request,
     student_data: StudentCreate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """添加学员"""
@@ -453,7 +453,7 @@ async def get_my_classes(
 async def delete_student(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     # 从请求体中获取reason参数
@@ -520,7 +520,7 @@ async def delete_student(
 async def stop_student(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     # 从请求体中获取reason参数
@@ -587,7 +587,7 @@ async def stop_student(
 async def activate_student(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """启用学员（复学）"""
@@ -645,7 +645,7 @@ async def activate_student(
 async def unbind_student(
     request: Request,
     student_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     # 从请求体中获取reason参数
@@ -711,7 +711,7 @@ async def unbind_student(
 @router.get("/class-students/{class_id}", response_model=List[StudentSimpleResponse])
 async def get_class_students(
     class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取班级学员列表"""
@@ -751,7 +751,7 @@ async def get_teacher_students(
     session: Optional[str] = Query(None, description="届别"),
     skip: int = Query(0, ge=0, description="跳过的记录数"),
     limit: int = Query(20, ge=1, le=10000, description="返回的记录数"),
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取导师的所有学员"""
@@ -768,7 +768,7 @@ async def get_teacher_students(
 @router.get("/search", response_model=List[dict])
 async def search_students(
     keyword: str = Query(..., description="搜索关键词"),
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """搜索学员（模糊匹配）"""
@@ -779,7 +779,7 @@ async def search_students(
 @router.get("/note/{class_student_id}", response_model=dict)
 async def get_student_note(
     class_student_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取学员备注"""
@@ -814,7 +814,7 @@ async def get_student_note(
 async def create_or_update_student_note(
     class_student_id: int,
     note_data: StudentNoteCreate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """创建或更新学员备注"""
@@ -976,7 +976,7 @@ class StudentTagsUpdate(BaseModel):
 @router.get("/tags/{class_student_id}", response_model=List[dict])
 async def get_student_tags(
     class_student_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取学员标签"""
@@ -988,7 +988,7 @@ async def get_student_tags(
 async def update_student_tags(
     class_student_id: int,
     tags_data: StudentTagsUpdate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """更新学员标签"""
@@ -1086,7 +1086,7 @@ async def update_student_info(
     request: Request,
     class_student_id: int,
     student_data: StudentInfoUpdate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """更新学员基本信息"""

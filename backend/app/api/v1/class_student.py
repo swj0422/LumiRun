@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher
+from app.core.security import get_current_user, require_manager
 from app.models.user import User
 from app.models.class_info import ClassInfo
 from app.services import class_student_service
@@ -51,7 +51,7 @@ class StudentResponse(BaseModel):
 async def add_student(
     request: Request,
     data: StudentCreate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     class_info = await ClassService.get_class_by_id(db, data.class_id)
@@ -146,7 +146,7 @@ async def add_student(
 async def batch_add_students(
     request: Request,
     data: StudentBatchCreate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     class_info = await ClassService.get_class_by_id(db, data.class_id)
@@ -239,7 +239,7 @@ async def batch_add_students(
 async def get_class_students(
     class_id: int,
     status: Optional[int] = None,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     class_info = await ClassService.get_class_by_id(db, class_id)
@@ -270,7 +270,7 @@ async def get_class_students(
 async def switch_student_class(
     student_id: int,
     new_class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """学员切换班级"""
@@ -307,7 +307,7 @@ async def switch_student_class(
 async def update_student(
     student_id: int,
     data: StudentUpdate,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """更新学员信息"""
@@ -357,7 +357,7 @@ async def stop_student(
     request: Request,
     student_id: int,
     data: dict,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     reason = data.get("reason", "")

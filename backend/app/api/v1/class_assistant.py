@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from typing import List
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher
+from app.core.security import get_current_user, require_manager
 from app.services.class_assistant_service import ClassAssistantService
 from app.models.user import User
 from app.models.class_assistant import ClassAssistant
@@ -26,7 +26,7 @@ class AddAssistantRequest(BaseModel):
 @router.post("", response_model=dict)
 async def add_assistant(
     request: AddAssistantRequest,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """添加班级助理"""
@@ -57,7 +57,7 @@ class RemoveAssistantRequest(BaseModel):
 @router.delete("", response_model=dict)
 async def remove_assistant(
     request: RemoveAssistantRequest,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """移除班级助理"""
@@ -81,7 +81,7 @@ async def remove_assistant(
 @router.get("/class/{class_id}", response_model=dict)
 async def get_class_assistants(
     class_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取班级的助理列表"""

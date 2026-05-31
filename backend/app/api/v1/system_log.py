@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher, require_admin
+from app.core.security import get_current_user, require_manager, require_admin
 from app.models.system_log import SystemLog, LogType, LogLevel
 from app.models.user import User
 from app.services.log_service import LogService

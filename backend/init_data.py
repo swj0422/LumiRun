@@ -13,8 +13,8 @@ async def init_roles(conn):
     roles = [
         {"id": 1, "role_name": "super_admin", "remark": "系统最高权限，可管理所有功能"},
         {"id": 2, "role_name": "admin", "remark": "管理用户和日志，不可操作业务数据"},
-        {"id": 3, "role_name": "teacher", "remark": "管理班级、学员、成长值、奖励"},
-        {"id": 4, "role_name": "student", "remark": "查看成长值、兑换奖励"}
+        {"id": 3, "role_name": "manager", "remark": "管理组织、成员、成长值、奖励"},
+        {"id": 4, "role_name": "member", "remark": "查看成长值、兑换奖励"}
     ]
     
     for role in roles:
@@ -47,10 +47,10 @@ async def init_users(conn):
         },
         {
             "id": 2,
-            "email": "teacher@example.com",
-            "username": "teacher",
+            "email": "manager@example.com",
+            "username": "manager",
             "password": password_hash,
-            "real_name": "张导师",
+            "real_name": "张管理者",
             "phone": "13800138001",
             "role_id": 3,
             "status": 1,
@@ -58,10 +58,10 @@ async def init_users(conn):
         },
         {
             "id": 3,
-            "email": "student@example.com",
-            "username": "student",
+            "email": "member@example.com",
+            "username": "member",
             "password": password_hash,
-            "real_name": "李同学",
+            "real_name": "李成员",
             "phone": "13800138002",
             "role_id": 4,
             "status": 1,

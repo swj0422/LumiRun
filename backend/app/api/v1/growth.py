@@ -4,7 +4,7 @@ from sqlalchemy import select
 from typing import Optional, List
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import get_current_user, require_teacher, require_growth_permission
+from app.core.security import get_current_user, require_manager, require_growth_permission
 from app.schemas.growth import GrowthLogCreate, GrowthLogResponse, GrowthScoreResponse, GrowthReasonCreate, GrowthReasonResponse
 from app.services.growth_service import GrowthService
 from app.models.user import User
@@ -385,7 +385,7 @@ async def export_growth_logs(
 ):
     """导出成长值记录"""
     from app.services.export_service import ExportService
-    from app.core.security import require_teacher
+    from app.core.security import require_manager
 
     # 检查权限
     is_teacher_user = current_user.role.role_name in ["super_admin", "admin", "teacher"]

@@ -219,10 +219,10 @@ CREATE TABLE IF NOT EXISTS sys_log (
 
 -- 初始化角色数据
 INSERT INTO sys_role (id, role_name, remark) VALUES
-(1, '超级管理员', '系统最高权限，可管理所有功能'),
-(2, '管理员', '管理用户和日志，不可操作业务数据'),
-(3, '导师', '管理班级、学员、成长值、奖励'),
-(4, '学员', '查看成长值、兑换奖励')
+(1, 'super_admin', '系统最高权限，可管理所有功能'),
+(2, 'admin', '管理用户和日志，不可操作业务数据'),
+(3, 'manager', '管理组织、成员、成长值、奖励'),
+(4, 'member', '查看成长值、兑换奖励')
 ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
 
 -- 创建超级管理员账号
@@ -231,16 +231,16 @@ INSERT INTO sys_user (id, email, password, real_name, phone, role_id, status, lo
 (1, 'admin@example.com', '$pbkdf2-sha256$29000$da4VgtAaY8y5dy7F2Pt/Dw$n2.jin76GFP4WyRdpMt7BaedMzNM/Ge5MF/bWEVSBxY', '超级管理员', '13800138000', 1, 1, 0)
 ON DUPLICATE KEY UPDATE email = VALUES(email);
 
--- 创建测试导师账号
--- 邮箱: teacher@example.com, 密码: Password123 (pbkdf2_sha256加密)
+-- 创建测试管理者账号
+-- 邮箱: manager@example.com, 密码: Password123 (pbkdf2_sha256加密)
 INSERT INTO sys_user (id, email, password, real_name, phone, role_id, status, login_count) VALUES
-(2, 'teacher@example.com', '$pbkdf2-sha256$29000$da4VgtAaY8y5dy7F2Pt/Dw$n2.jin76GFP4WyRdpMt7BaedMzNM/Ge5MF/bWEVSBxY', '张导师', '13800138001', 3, 1, 0)
+(2, 'manager@example.com', '$pbkdf2-sha256$29000$da4VgtAaY8y5dy7F2Pt/Dw$n2.jin76GFP4WyRdpMt7BaedMzNM/Ge5MF/bWEVSBxY', '张管理者', '13800138001', 3, 1, 0)
 ON DUPLICATE KEY UPDATE email = VALUES(email);
 
--- 创建测试学员账号
--- 邮箱: student@example.com, 密码: Password123 (pbkdf2_sha256加密)
+-- 创建测试成员账号
+-- 邮箱: member@example.com, 密码: Password123 (pbkdf2_sha256加密)
 INSERT INTO sys_user (id, email, password, real_name, phone, role_id, status, login_count) VALUES
-(3, 'student@example.com', '$pbkdf2-sha256$29000$da4VgtAaY8y5dy7F2Pt/Dw$n2.jin76GFP4WyRdpMt7BaedMzNM/Ge5MF/bWEVSBxY', '李同学', '13800138002', 4, 1, 0)
+(3, 'member@example.com', '$pbkdf2-sha256$29000$da4VgtAaY8y5dy7F2Pt/Dw$n2.jin76GFP4WyRdpMt7BaedMzNM/Ge5MF/bWEVSBxY', '李成员', '13800138002', 4, 1, 0)
 ON DUPLICATE KEY UPDATE email = VALUES(email);
 
 -- 创建测试班级

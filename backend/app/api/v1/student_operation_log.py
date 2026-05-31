@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import require_teacher
+from app.core.security import require_manager
 from app.models.user import User
 from app.models.student_operation_log import StudentOperationLog
 from sqlalchemy import select, and_, or_
@@ -20,7 +20,7 @@ async def get_student_operation_logs(
     end_time: Optional[datetime] = Query(None, description="结束时间"),
     skip: int = Query(0, ge=0, description="跳过记录数"),
     limit: int = Query(20, ge=1, le=100, description="每页记录数"),
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取学员操作日志列表"""
@@ -91,7 +91,7 @@ async def get_student_operation_logs(
 @router.get("/{log_id}")
 async def get_student_operation_log_detail(
     log_id: int,
-    current_user: User = Depends(require_teacher),
+    current_user: User = Depends(require_manager),
     db: AsyncSession = Depends(get_db)
 ):
     """获取学员操作日志详情"""
