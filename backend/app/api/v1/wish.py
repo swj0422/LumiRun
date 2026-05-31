@@ -4,6 +4,7 @@ from sqlalchemy import select
 from typing import Optional, List
 from app.core.database import get_db
 from app.core.security import get_current_user, require_admin
+from app.core.config import get_settings
 from app.models.wish import Wish
 from app.models.user import User
 from app.services.wish_service import WishService
@@ -41,12 +42,13 @@ async def create_wish(
     image_url = None
     if image:
         filename = f"wish_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
-        filepath = os.path.join("uploads", "wishes", filename)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        
+        upload_dir = os.path.join(get_settings().UPLOAD_DIR, "wishes")
+        os.makedirs(upload_dir, exist_ok=True)
+        filepath = os.path.join(upload_dir, filename)
+
         with open(filepath, "wb") as f:
             f.write(await image.read())
-        
+
         image_url = f"/uploads/wishes/{filename}"
     
     wish = await WishService.create_wish(
