@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional, List
@@ -34,7 +34,10 @@ class WishResponse(BaseModel):
 
 @router.post("/", response_model=WishResponse)
 async def create_wish(
-    wish_data: WishCreate,
+    title: str = Form(...),
+    description: Optional[str] = Form(None),
+    class_id: Optional[int] = Form(None),
+    is_anonymous: Optional[int] = Form(0),
     images: List[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -56,16 +59,16 @@ async def create_wish(
             image_url = f"/uploads/wishes/{filename}"
 
     # 使用 title 作为 content
-    content = wish_data.title
-    if wish_data.description:
-        content = f"{wish_data.title}\n{wish_data.description}"
+    content = title
+    if description:
+        content = f"{title}\n{description}"
 
     wish = await WishService.create_wish(
         db=db,
         user_id=current_user.id,
         content=content,
         image_url=image_url,
-        is_anonymous=wish_data.is_anonymous
+        is_anonymous=is_anonymous
     )
     
     return WishResponse(
