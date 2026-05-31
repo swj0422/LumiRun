@@ -36,8 +36,8 @@ class WishResponse(BaseModel):
 async def create_wish(
     title: str = Form(...),
     description: Optional[str] = Form(None),
-    class_id: Optional[int] = Form(None),
-    is_anonymous: Optional[int] = Form(0),
+    class_id: Optional[str] = Form(None),
+    is_anonymous: Optional[str] = Form("0"),
     images: List[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -58,6 +58,11 @@ async def create_wish(
 
             image_url = f"/uploads/wishes/{filename}"
 
+    # 处理 is_anonymous
+    is_anon = 0
+    if is_anonymous and is_anonymous not in ["0", "false", ""]:
+        is_anon = 1
+
     # 使用 title 作为 content
     content = title
     if description:
@@ -68,9 +73,9 @@ async def create_wish(
         user_id=current_user.id,
         content=content,
         image_url=image_url,
-        is_anonymous=is_anonymous
+        is_anonymous=is_anon
     )
-    
+
     return WishResponse(
         id=wish.id,
         user_id=wish.user_id,
@@ -84,75 +89,134 @@ async def create_wish(
 
 @router.get("/my")
 async def get_my_wishes(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
 ):
-    """获取我的心愿便利贴列表"""
+    """获取我的心愿列表"""
     wishes, total = await WishService.get_user_wishes(
         db=db,
         user_id=current_user.id,
-        skip=skip,
-        limit=limit
+        page=page,
+        page_size=page_size
     )
-    
-    wish_list = []
-    for wish in wishes:
-        wish_list.append({
-            "id": wish.id,
-            "content": wish.content,
-            "image_url": wish.image_url,
-            "is_anonymous": wish.is_anonymous,
-            "created_at": wish.created_at
-        })
-    
+
     return {
-        "items": wish_list,
+        "items": [
+            WishResponse(
+                id=w.id,
+                user_id=w.user_id,
+                user_name=None if w.is_anonymous else current_user.real_name,
+                content=w.content,
+                image_url=w.image_url,
+                is_anonymous=w.is_anonymous,
+                created_at=w.created_at
+            ) for w in wishes
+        ],
         "total": total,
-        "skip": skip,
-        "limit": limit
+        "page": page,
+        "page_size": page_size
     }
 
 
-@router.get("/")
+@router.get("/public")
 async def get_public_wishes(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
 ):
-    """获取公共心愿墙"""
+    """获取公开心愿列表"""
     wishes, total = await WishService.get_public_wishes(
         db=db,
-        skip=skip,
-        limit=limit
+        page=page,
+        page_size=page_size
     )
-    
-    wish_list = []
-    for wish in wishes:
-        # 获取用户名（如果不是匿名）
-        user_name = None
-        if not wish.is_anonymous:
-            user = await db.execute(select(User).where(User.id == wish.user_id))
-            user = user.scalar_one_or_none()
-            user_name = user.real_name if user else None
-        
-        wish_list.append({
-            "id": wish.id,
-            "user_id": wish.user_id,
-            "user_name": user_name,
-            "content": wish.content,
-            "image_url": wish.image_url,
-            "is_anonymous": wish.is_anonymous,
-            "created_at": wish.created_at
-        })
-    
+
     return {
-        "items": wish_list,
+        "items": [
+            WishResponse(
+                id=w.id,
+                user_id=w.user_id,
+                user_name=None if w.is_anonymous else w.user.real_name if w.user else None,
+                content=w.content,
+                image_url=w.image_url,
+                is_anonymous=w.is_anonymous,
+                created_at=w.created_at
+            ) for w in wishes
+        ],
         "total": total,
-        "skip": skip,
-        "limit": limit
+        "page": page,
+        "page_size": page_size
     }
+
+
+@router.put("/{wish_id}", response_model=WishResponse)
+async def update_wish(
+    wish_id: int,
+    title: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    is_anonymous: Optional[str] = Form("0"),
+    images: List[UploadFile] = File(None),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """更新心愿"""
+    # 获取心愿
+    result = await db.execute(select(Wish).where(Wish.id == wish_id))
+    wish = result.scalar_one_or_none()
+
+    if not wish:
+        raise HTTPException(status_code=404, detail="心愿不存在")
+
+    # 检查权限
+    if wish.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="无权限修改此心愿")
+
+    # 处理图片上传（取第一张）
+    image_url = wish.image_url
+    if images and len(images) > 0:
+        image = images[0]
+        if image and image.filename:
+            filename = f"wish_{current_user.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+            upload_dir = os.path.join(get_settings().UPLOAD_DIR, "wishes")
+            os.makedirs(upload_dir, exist_ok=True)
+            filepath = os.path.join(upload_dir, filename)
+
+            with open(filepath, "wb") as f:
+                f.write(await image.read())
+
+            image_url = f"/uploads/wishes/{filename}"
+
+    # 处理 is_anonymous
+    is_anon = 0
+    if is_anonymous and is_anonymous not in ["0", "false", ""]:
+        is_anon = 1
+
+    # 更新内容
+    content = title
+    if description:
+        content = f"{title}\n{description}"
+    elif wish.content:
+        content = wish.content
+
+    updated_wish = await WishService.update_wish(
+        db=db,
+        wish_id=wish_id,
+        content=content,
+        image_url=image_url,
+        is_anonymous=is_anon
+    )
+
+    return WishResponse(
+        id=updated_wish.id,
+        user_id=updated_wish.user_id,
+        user_name=None if updated_wish.is_anonymous else current_user.real_name,
+        content=updated_wish.content,
+        image_url=updated_wish.image_url,
+        is_anonymous=updated_wish.is_anonymous,
+        created_at=updated_wish.created_at
+    )
 
 
 @router.delete("/{wish_id}")
@@ -161,22 +225,21 @@ async def delete_wish(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """删除心愿便利贴（软删除）"""
-    success = await WishService.delete_wish(
-        db=db,
-        wish_id=wish_id,
-        user_id=current_user.id
-    )
+    """删除心愿"""
+    # 获取心愿
+    result = await db.execute(select(Wish).where(Wish.id == wish_id))
+    wish = result.scalar_one_or_none()
 
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="心愿不存在或无权删除"
-        )
+    if not wish:
+        raise HTTPException(status_code=404, detail="心愿不存在")
 
-    return {
-        "message": "删除成功"
-    }
+    # 检查权限（自己的或者管理员）
+    if wish.user_id != current_user.id and current_user.role_id not in [1, 2]:
+        raise HTTPException(status_code=403, detail="无权限删除此心愿")
+
+    await WishService.delete_wish(db=db, wish_id=wish_id)
+
+    return {"message": "删除成功"}
 
 
 @router.delete("/admin/{wish_id}")
@@ -185,19 +248,14 @@ async def admin_delete_wish(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """管理员删除心愿（可删除任意心愿）"""
-    success = await WishService.delete_wish(
-        db=db,
-        wish_id=wish_id,
-        is_admin=True
-    )
+    """管理员删除任意心愿"""
+    # 获取心愿
+    result = await db.execute(select(Wish).where(Wish.id == wish_id))
+    wish = result.scalar_one_or_none()
 
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="心愿不存在"
-        )
+    if not wish:
+        raise HTTPException(status_code=404, detail="心愿不存在")
 
-    return {
-        "message": "删除成功"
-    }
+    await WishService.delete_wish(db=db, wish_id=wish_id)
+
+    return {"message": "删除成功"}
